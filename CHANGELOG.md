@@ -30,7 +30,8 @@ Added:
 - Models and data policy (`zdr` / `standard`), gateway-only model access.
 - Server sandbox rules (`.devcontainer/`, `./stack.sh`, egress allowlist).
 - Knowledge-base convention (`kb-<company>-<project>`, `kb-global`).
-- `CODEOWNERS` template for governed files.
+- `CODEOWNERS` template for governed files; agents commit with their own git
+  identity so governed-file changes can be attributed.
 - `sync_agents_md.py` with tests; `factory-check`.
 
 Moved to private `factory-ops`: master brief, rollout tracker, hazards, per-repository

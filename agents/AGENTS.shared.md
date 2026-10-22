@@ -161,6 +161,9 @@ finding; those need the owner.
 
 ### Repositories
 
+- **Commit as the agent, never as the owner.** Use the agent git identity configured
+  for your worktree (recorded in `factory-config`). Changes to governed files
+  (`CODEOWNERS` paths) by a non-owner identity fail CI on `dev`.
 - Work happens on a **feature branch** named with the work-item id
   (`feat/<ITEM-ID>-slug`); protected branches (`main`, `stage`, `prod`, `master`) are
   never committed to directly. Never force-push and never rewrite published history.
