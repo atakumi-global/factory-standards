@@ -1,0 +1,25 @@
+# Environment and secrets — never commit these
+.env
+.env.*
+!.env.example
+.envrc
+opencode.json
+opencode.jsonc
+client_secret*.json
+*.pem
+*.key
+
+# Dependencies and build output
+node_modules/
+dist/
+build/
+.next/
+out/
+.venv/
+__pycache__/
+*.pyc
+
+# Tooling and local state
+.DS_Store
+Thumbs.db
+*.log

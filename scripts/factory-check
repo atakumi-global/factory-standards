@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# factory-check: the security scans CI runs, run locally before handoff.
+# Works for any coding agent or human. Tools come from the sandbox image.
+#   factory-check            scan the branch against the default branch
+#   factory-check <base>     scan commits since <base>
+set -uo pipefail
+root="$(git rev-parse --show-toplevel)"; cd "$root"
+default="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/main)"
+base="${1:-$(git merge-base HEAD "$default" 2>/dev/null || git rev-list --max-parents=0 HEAD | tail -1)}"
+fail=0
+run() { local name="$1"; shift
+  if ! command -v "$1" >/dev/null; then echo "== $name: $1 not installed"; fail=1; return; fi
+  echo "== $name"; if "$@"; then echo "   pass"; else echo "   FAIL"; fail=1; fi; }
+
+run "secrets in branch commits (gitleaks)" gitleaks git --log-opts="$base..HEAD" --redact --no-banner
+run "secrets in working tree (gitleaks)"   gitleaks dir . --redact --no-banner
+run "code scan (semgrep)"                  semgrep scan --config p/default --config p/secrets --error --quiet --metrics=off
+run "dependency vulnerabilities (osv)"     osv-scanner scan source -r .
+run "misconfig and vulns (trivy)"          trivy fs --quiet --scanners vuln,misconfig,secret --severity HIGH,CRITICAL --exit-code 1 .
+
+if [ "$fail" -ne 0 ]; then
+  echo; echo "factory-check FAILED. Fix the findings, or report them in the handoff and set the item to Blocked."
+  exit 1
+fi
+echo; echo "factory-check passed."

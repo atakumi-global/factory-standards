@@ -1,0 +1,9 @@
+{
+  "workspace": "REPLACE-WITH-PLANE-WORKSPACE-SLUG",
+  "project_id": "REPLACE-WITH-PLANE-PROJECT-UUID",
+  "identifier": "REPLACE-WITH-IDENTIFIER",
+  "owner_member_id": "REPLACE-WITH-OWNER-MEMBER-UUID",
+  "agent_member_id": "REPLACE-WITH-AGENT-MEMBER-UUID",
+  "approver_member_id": "REPLACE-WITH-APPROVER-MEMBER-UUID",
+  "instance_url": "https://plane.atakumi.net"
+}
