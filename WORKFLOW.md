@@ -20,7 +20,7 @@
 6. CI re-runs the security scans and gates on every push to `dev`. A red `dev` blocks
    promotion.
 7. The agent never approves and never promotes; Plane items stop at **In Review**.
-   Production promotion requires the owner's approval in the GitHub `production`
+   Production promotion requires the owner's approval in the GitHub `prod`
    environment.
 
 ## The finish sequence
@@ -43,7 +43,7 @@ git push origin dev                     # 4. publish dev
 5. Restart the local environment with the project's stack script — never hand-spawn
    servers.
 6. In GitHub: promote `dev` → stage (manual), then stage → production (manual,
-   approved in the `production` environment). Promotion is never done locally and
+   approved in the `prod` environment). Promotion is never done locally and
    never by an agent.
 7. Record it in Plane: comment the branch, merge commit, gate and `factory-check`
    evidence, security checklist outcome and pushed state; move the item to

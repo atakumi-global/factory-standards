@@ -3,6 +3,10 @@
 Versions follow semantic versioning: MAJOR removes or redefines a rule, MINOR adds
 one, PATCH clarifies.
 
+## Unreleased
+
+- `WORKFLOW.md`: GitHub environments are named `stage` and `prod`.
+
 ## 1.0.1 — 2026-10-25
 
 - Added: agents commit with their own git identity, never the owner's, so
