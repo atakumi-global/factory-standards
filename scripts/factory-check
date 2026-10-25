@@ -15,7 +15,11 @@ run() { local name="$1"; shift
 run "secrets in branch commits (gitleaks)" gitleaks git --log-opts="$base..HEAD" --redact --no-banner
 run "secrets in working tree (gitleaks)"   gitleaks dir . --redact --no-banner
 run "code scan (semgrep)"                  semgrep scan --config p/default --config p/secrets --error --quiet --metrics=off
-run "dependency vulnerabilities (osv)"     osv-scanner scan source -r .
+if [ -f osv-scanner.toml ]; then
+  run "dependency vulnerabilities (osv)"   osv-scanner scan source --config osv-scanner.toml -r .
+else
+  run "dependency vulnerabilities (osv)"   osv-scanner scan source -r .
+fi
 run "misconfig and vulns (trivy)"          trivy fs --quiet --scanners vuln,misconfig,secret --severity HIGH,CRITICAL --exit-code 1 .
 
 if [ "$fail" -ne 0 ]; then

@@ -6,6 +6,8 @@ one, PATCH clarifies.
 ## Unreleased
 
 - `WORKFLOW.md`: GitHub environments are named `stage` and `prod`.
+- Accepted dependency findings live in a root `osv-scanner.toml` (governed; each
+  entry has a reason and a one-month expiry); `factory-check` uses it.
 
 ## 1.0.1 — 2026-10-25
 
