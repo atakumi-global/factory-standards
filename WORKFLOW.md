@@ -40,8 +40,9 @@ git merge --no-ff feat/<ITEM-ID>-slug   # 3. merge message references the item i
 git push origin dev                     # 4. publish dev
 ```
 
-5. Restart the local environment with the project's stack script — never hand-spawn
-   servers.
+5. Restart the local environment with `./stack.sh restart` (see `STACK.md`) — never
+   hand-spawn servers. On the agent server skip this (`finish-work --no-restart`): the
+   dev preview restarts from `dev` by itself within about two minutes.
 6. In GitHub: promote `dev` → stage (manual), then stage → production (manual,
    approved in the `prod` environment). Promotion is never done locally and
    never by an agent.

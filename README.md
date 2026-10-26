@@ -15,7 +15,8 @@ per-repository exceptions) lives in `atakumi-global/factory-ops`.
 | --- | --- |
 | `agents/AGENTS.shared.md` | Universal agent rules, synced into every repository's `AGENTS.md` |
 | `WORKFLOW.md` | Canonical branch and finish sequence (no PRs; gate and `factory-check` before `dev`) |
-| `templates/` | The golden set copied into each project: `AGENTS.md`, `CONSTITUTION.md`, `HANDOVER.md`, `plane.json` (→ `.plane.json`), `gitignore` (→ `.gitignore`), `CODEOWNERS`, `docs/`, `project/`, `design-system/DESIGN.md`, `prototypes/` |
+| `STACK.md` | The `./stack.sh` contract every project implements (local stack and dev preview) |
+| `templates/` | The golden set copied into each project: `AGENTS.md`, `CONSTITUTION.md`, `HANDOVER.md`, `plane.json` (→ `.plane.json`), `gitignore` (→ `.gitignore`), `CODEOWNERS`, `stack.sh`, `docs/`, `project/`, `design-system/DESIGN.md`, `prototypes/` |
 | `kb/` | Knowledge-base convention and the template for `kb-<company>-<project>` repositories |
 | `scripts/sync_agents_md.py` | Inserts or refreshes the shared section between the markers |
 | `scripts/factory-check` | The security scans CI runs, for use before finishing |
@@ -23,7 +24,8 @@ per-repository exceptions) lives in `atakumi-global/factory-ops`.
 
 ## The golden set
 
-Per project, at minimum: `AGENTS.md`, `CONSTITUTION.md`, `HANDOVER.md`, `.plane.json`.
+Per project, at minimum: `AGENTS.md`, `CONSTITUTION.md`, `HANDOVER.md`, `.plane.json`,
+`stack.sh`.
 Where they apply: `docs/`, `project/`, and for UI projects `design-system/DESIGN.md`
 and `prototypes/`. Never: `CLAUDE.md` or other agent-specific instruction files
 (fold them into `AGENTS.md`), `docs/todo.md` (work lives in Plane).

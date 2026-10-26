@@ -5,6 +5,11 @@ one, PATCH clarifies.
 
 ## Unreleased
 
+- Added: `STACK.md` and `templates/stack.sh`, one stack script contract for every
+  project (`start|stop|restart|status|url|logs`, registry ports, loopback only,
+  development secrets only). Agents on the agent server do not run the stack in
+  their workspace; the dev preview follows `dev`.
+
 - `WORKFLOW.md`: GitHub environments are named `stage` and `prod`.
 - Accepted dependency findings live in a root `osv-scanner.toml` (governed; each
   entry has a reason and a one-month expiry); `factory-check` uses it.
