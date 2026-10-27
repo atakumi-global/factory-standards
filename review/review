@@ -1,0 +1,158 @@
+#!/usr/bin/env bash
+# review: open a project's dev preview from the factory's agent server (Linux, macOS).
+# Installed by review-setup.sh; the same commands as review.ps1 (Windows).
+#
+#   review airtime start     start the preview if needed, tunnel in the background,
+#                            print the links and open the browser
+#   review airtime stop      close your tunnel (the server stops the preview itself
+#                            2 hours after the last tunnel closes)
+#   review airtime status    the preview's state on the server and your tunnel
+#   review status            all previews you have access to
+#
+# The project is its Plane identifier (AIRTIME), its key (ATAK-AIRTIME) or its name, in
+# any case; "review start airtime" works too. No terminal stays open: the tunnel is a
+# background ssh process. Connects to the SSH host "factory-review" (written by
+# review-setup.sh into ~/.ssh/config); you need your WireGuard connection on.
+# Works with the bash 3.2 that ships with macOS.
+set -uo pipefail
+SSH_HOST="${FACTORY_REVIEW_HOST:-factory-review}"
+# Local ports = the project's ports + this offset (e.g. 10000 when something on your
+# computer already uses 3500-3509: the preview then opens on 13500).
+OFFSET="${FACTORY_REVIEW_PORT_OFFSET:-0}"
+[[ "$OFFSET" =~ ^[0-9]+$ ]] || { echo "FACTORY_REVIEW_PORT_OFFSET must be a number" >&2; exit 2; }
+state="${XDG_STATE_HOME:-$HOME/.local/state}/factory-review"
+mkdir -p "$state"
+
+no_browser=0
+args=()
+for a in "$@"; do
+  case "$a" in --no-browser) no_browser=1 ;; *) args+=("$a") ;; esac
+done
+first="${args[0]:-}"; second="${args[1]:-}"
+case "$first" in
+  start|stop|status) action="$first"; name="$second" ;;
+  *) name="$first"; action="$second" ;;
+esac
+[ -n "$action" ] || action=status
+case "$action" in start|stop|status) ;; *)
+  echo "usage: review <project> start|stop|status   or   review status" >&2; exit 2 ;;
+esac
+
+gate() { # gate <request>: output of the review gate, or a clear message and exit
+  local out
+  if ! out="$(ssh -o BatchMode=yes -o ConnectTimeout=10 "$SSH_HOST" "$1" 2>&1)"; then
+    {
+      echo "The agent server did not answer '$1':"; echo "$out" | sed 's/^/  /'
+      echo "Is your WireGuard connection on? Has the factory owner added your key yet?"
+    } >&2
+    exit 1
+  fi
+  printf '%s\n' "$out"
+}
+lower() { echo "$1" | tr '[:upper:]' '[:lower:]'; }
+tunnel_pid() {
+  local f="$state/$1.pid" p
+  [ -f "$f" ] || return 1
+  p="$(cat "$f")"
+  if kill -0 "$p" 2>/dev/null && ps -p "$p" -o args= 2>/dev/null | grep -q "start $1\$"; then echo "$p"; return 0; fi
+  rm -f "$f"; return 1
+}
+answers() {
+  local code
+  code="$(curl -s -m 5 --noproxy '*' -o /dev/null -w '%{http_code}' "$1" 2>/dev/null)"
+  [ -n "$code" ] && [ "$code" != "000" ]
+}
+open_url() {
+  [ "$no_browser" = 1 ] && return 0
+  if [ "$(uname)" = Darwin ]; then open "$1"
+  elif command -v xdg-open >/dev/null 2>&1; then xdg-open "$1" >/dev/null 2>&1 &
+  fi
+}
+
+if [ -z "$name" ]; then
+  [ "$action" = status ] || { echo "usage: review <project> $action" >&2; exit 2; }
+  gate status; exit 0
+fi
+
+rows="$(gate list)" || exit 1
+want="$(lower "$name")"; row=""
+while IFS='|' read -r k i n b pth; do
+  [ -n "$k" ] || continue
+  if [ "$(lower "$k")" = "$want" ] || [ "$(lower "$i")" = "$want" ] || [ "$(lower "$n")" = "$want" ]; then
+    row="$k|$i|$n|$b|$pth"; break
+  fi
+done <<EOF
+$rows
+EOF
+if [ -z "$row" ]; then
+  echo "No preview '$name' for you. Yours:"
+  while IFS='|' read -r k i n _ _; do
+    [ -n "$k" ] || continue
+    if [ -n "$i" ]; then echo "  $(lower "$i")  ($k, $n)"; else echo "  $k  ($n)"; fi
+  done <<EOF
+$rows
+EOF
+  exit 2
+fi
+IFS='|' read -r key ident pname base path <<EOF
+$row
+EOF
+if [ -n "$ident" ]; then label="$(lower "$ident")"; else label="$key"; fi
+pid_file="$state/$key.pid"; out_file="$state/$key.out"; err_file="$state/$key.err"
+lbase=$((base + OFFSET))
+probe="http://127.0.0.1:$lbase$path"; app="http://localhost:$lbase$path"
+
+show_links() {
+  echo
+  echo "$pname ($key) dev preview"
+  echo "  App:     $app"
+  echo "  Ports:   $lbase-$((lbase + 9)) on this computer, forwarded from the agent server"
+  echo "  Close:   review $label stop"
+}
+
+if [ "$action" = start ]; then
+  if tunnel_pid "$key" >/dev/null && answers "$probe"; then
+    echo "The preview of $label is already open."; show_links; open_url "$app"; exit 0
+  fi
+  old="$(tunnel_pid "$key")" && kill "$old" 2>/dev/null
+  rm -f "$out_file" "$err_file"
+  forwards=()
+  for i in 0 1 2 3 4 5 6 7 8 9; do forwards+=(-L "127.0.0.1:$((lbase + i)):127.0.0.1:$((base + i))"); done
+  nohup ssh -n -T -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 \
+    -o ServerAliveCountMax=3 "${forwards[@]}" "$SSH_HOST" "start $key" \
+    > "$out_file" 2> "$err_file" < /dev/null &
+  tpid=$!
+  disown "$tpid" 2>/dev/null || true
+  echo "$tpid" > "$pid_file"
+  echo "Starting the preview of $label (latest dev). The first start can take a few minutes."
+  waited=0
+  while :; do
+    sleep 2; waited=$((waited + 2))
+    if ! kill -0 "$tpid" 2>/dev/null; then
+      echo "The preview did not start:"
+      cat "$out_file" "$err_file" 2>/dev/null | grep -v '^in use ' | sed 's/^/  /'
+      echo "If a port is 'already in use', something on your computer uses $lbase-$((lbase + 9));"
+      echo "then try e.g.: FACTORY_REVIEW_PORT_OFFSET=10000 review $label start"
+      rm -f "$pid_file"; exit 1
+    fi
+    answers "$probe" && break
+    if [ "$waited" -ge 900 ]; then echo "Not up after 15 minutes; the tunnel is left open. Check: review $label status"; exit 1; fi
+    [ $((waited % 16)) -eq 0 ] && echo "  still starting..."
+  done
+  show_links
+  echo "The tunnel runs in the background; you can close this terminal."
+  open_url "$app"
+  exit 0
+fi
+
+if [ "$action" = stop ]; then
+  if t="$(tunnel_pid "$key")"; then kill "$t" 2>/dev/null; echo "Tunnel to $label closed."
+  else echo "No tunnel to $label was open."; fi
+  rm -f "$pid_file"
+  echo "The server stops the preview 2 hours after the last tunnel closes."
+  exit 0
+fi
+
+if tunnel_pid "$key" >/dev/null; then t=open; else t=closed; fi
+echo "Your tunnel to $label: $t"
+gate "status $key"
