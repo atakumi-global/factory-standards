@@ -21,10 +21,14 @@ export DB2_PORT=$((BASE_PORT + 3)) SEARCH_PORT=$((BASE_PORT + 4))
 export MAIL_SMTP_PORT=$((BASE_PORT + 5)) MAIL_UI_PORT=$((BASE_PORT + 6))
 COMPOSE_PROJECT="${PROJECT}-${INSTANCE}"
 STATE_DIR=".stack/${INSTANCE}"
+# Development secrets live outside the working tree, so factory-check's working-tree
+# secret scan never sees them and they can never be committed.
+SECRETS_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/stack/${COMPOSE_PROJECT}.env"
 URL="http://127.0.0.1:${APP_PORT}${HEALTH_PATH}"
 
 # ---------------------------------------------------------------- PROJECT hooks
-# Development secrets: generated once into .env.stack (gitignored), never real ones.
+# Development secrets: generated once into $SECRETS_FILE (outside the repository),
+# never real ones. One KEY=VALUE per line; quote values that contain spaces.
 dev_secrets() {
   cat <<EOF
 APP_SECRET=$(head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n')
@@ -36,7 +40,7 @@ prepare() {
   : # e.g. npm ci --no-audit --no-fund
 }
 
-# Extra environment for the app process (reads .env.stack values via $VAR).
+# Extra environment for the app process (the dev secrets are already exported).
 app_env() {
   : # e.g. export DATABASE_URL="postgres://app:app@127.0.0.1:${DB_PORT}/app"
 }
@@ -44,7 +48,9 @@ app_env() {
 # ---------------------------------------------------------------- implementation
 compose() { [ -n "$COMPOSE_FILE" ] && docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" "$@"; }
 pidfile() { echo "$STATE_DIR/app.pid"; }
-app_running() { [ -f "$(pidfile)" ] && kill -0 "$(cat "$(pidfile)")" 2>/dev/null; }
+# The app runs in its own process group (setsid), so stop also ends watchers and
+# children such as `tsx --watch` or `next dev` workers.
+app_running() { [ -f "$(pidfile)" ] && kill -0 -- "-$(cat "$(pidfile)")" 2>/dev/null; }
 healthy() { curl -fs -m 5 --noproxy '*' -o /dev/null "$URL"; }
 
 port_free_or_ours() {
@@ -58,15 +64,18 @@ port_free_or_ours() {
 }
 
 start() {
-  mkdir -p "$STATE_DIR"
-  if [ ! -f .env.stack ]; then dev_secrets > .env.stack; chmod 600 .env.stack; fi
-  set -a; . ./.env.stack; set +a
+  mkdir -p "$STATE_DIR" "$(dirname "$SECRETS_FILE")"
+  if [ ! -f "$SECRETS_FILE" ]; then (umask 077; dev_secrets > "$SECRETS_FILE"); fi
+  set -a
+  # shellcheck disable=SC1090
+  . "$SECRETS_FILE"
+  set +a
   port_free_or_ours "$APP_PORT"
   if [ -n "$COMPOSE_FILE" ]; then compose up -d --wait; fi
   prepare
   if [ -n "$APP_CMD" ] && ! app_running; then
     app_env
-    nohup bash -c "$APP_CMD" > "$STATE_DIR/app.log" 2>&1 &
+    setsid nohup bash -c "$APP_CMD" > "$STATE_DIR/app.log" 2>&1 < /dev/null &
     echo $! > "$(pidfile)"
   fi
   for _ in $(seq 1 120); do
@@ -80,9 +89,10 @@ start() {
 
 stop() {
   if app_running; then
-    pkill -TERM -P "$(cat "$(pidfile)")" 2>/dev/null || true
-    kill -TERM "$(cat "$(pidfile)")" 2>/dev/null || true
-    sleep 2
+    local pgid; pgid="$(cat "$(pidfile)")"
+    kill -TERM -- "-$pgid" 2>/dev/null || true
+    for _ in $(seq 1 10); do kill -0 -- "-$pgid" 2>/dev/null || break; sleep 0.5; done
+    kill -KILL -- "-$pgid" 2>/dev/null || true
   fi
   rm -f "$(pidfile)"
   if [ -n "$COMPOSE_FILE" ]; then compose stop >/dev/null 2>&1 || true; fi

@@ -30,12 +30,15 @@ Rules:
    owner's Docker locally. Compose project name `<project>-<instance>`
    (`STACK_INSTANCE`, default `local`; the dev preview uses `preview`), so instances
    never share containers or volumes.
-4. **Development secrets only.** The script creates `.env.stack` (gitignored) with
-   random values on first start. It never contains client data, production
-   credentials or the project's model key.
-5. **Healthy means usable.** `start` waits for the app's health URL and fails with the
+4. **Development secrets only, outside the repository.** On first start the script
+   writes random values to `~/.local/state/stack/<project>-<instance>.env`, outside the
+   working tree, so `factory-check` never flags them and they can never be committed.
+   They never include client data, production credentials or the project's model key.
+5. **Stop means everything.** The app runs in its own process group; `stop` ends the
+   whole group (watchers included) and the compose services, keeping data volumes.
+6. **Healthy means usable.** `start` waits for the app's health URL and fails with the
    last log lines if it does not come up.
-6. **No interactive prompts**, so the preview service can run it unattended.
+7. **No interactive prompts**, so the preview service can run it unattended.
 
 ## Where it runs
 

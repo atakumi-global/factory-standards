@@ -9,6 +9,10 @@ one, PATCH clarifies.
   project (`start|stop|restart|status|url|logs`, registry ports, loopback only,
   development secrets only). Agents on the agent server do not run the stack in
   their workspace; the dev preview follows `dev`.
+- `stack.sh`: development secrets live in `~/.local/state/stack/`, outside the working
+  tree (factory-check's working-tree scan no longer flags them); the app runs in its
+  own process group so `stop` also ends watchers. Found by the first agent task
+  (AIRTIME-92).
 
 - `WORKFLOW.md`: GitHub environments are named `stage` and `prod`.
 - Accepted dependency findings live in a root `osv-scanner.toml` (governed; each
