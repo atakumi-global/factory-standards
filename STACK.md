@@ -45,13 +45,15 @@ Rules:
 | Where | Who starts it | Instance |
 | --- | --- | --- |
 | Owner's laptop | the owner, with `./stack.sh` (or the project's `.ps1` on Windows) | `local` |
-| Agent server, dev preview | the preview service, automatically after every push to `dev` | `preview` |
+| Agent server, dev preview | the preview service, on demand when the owner opens it | `preview` |
 | Agent server, task workspace | nobody: agents run tests and gates there, not the stack | — |
 
-The dev preview always shows the latest `dev`. After `finish-work` pushes `dev`, the
-preview service picks up the change within about two minutes and restarts the stack.
-The owner opens it with `factory-preview <PROJECT>` on the laptop (an SSH tunnel to
-the project's ports).
+The dev preview shows the latest `dev` and runs only while the owner uses it. The owner
+opens it with `factory-preview <PROJECT>` on the laptop: that starts the stack on the
+agent server if needed and opens an SSH tunnel to the project's ports. While it is
+open, a push to `dev` (by `finish-work`) is picked up within about two minutes and the
+stack restarts. Two hours after the tunnel closes the preview service runs
+`./stack.sh stop` (data volumes kept); the next open starts it again.
 
 ## Template
 
