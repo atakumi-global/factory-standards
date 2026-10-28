@@ -1,45 +1,81 @@
 #!/usr/bin/env bash
 # review-setup: get this Linux or macOS computer ready to open the factory's dev previews.
-# Run it once, with the server address and host key from the factory owner's invitation:
+# Run it once, with the values from the factory owner's invitation (copy the whole line):
 #
-#   bash review-setup.sh <address> "<ssh-ed25519 AAAA...>"
+#   bash review-setup.sh 10.77.0.1 2222 "ssh-ed25519 AAAA..." 10.77.0.N "<server vpn key>" <ip>:<port>
 #
+# Needs WireGuard (macOS: the WireGuard app plus "brew install wireguard-tools";
+# Linux: the wireguard-tools package), ssh and curl.
 # What it does (nothing else, and nothing outside your own user account):
-#   1. Creates an SSH key only for previews: ~/.ssh/factory_review_ed25519 (kept if it exists).
-#   2. Adds the host "factory-review" to ~/.ssh/config and pins the server's host key
+#   1. Creates your WireGuard key and the tunnel file ~/factory-review/factory-review.conf
+#      (kept if it exists). The tunnel carries only the traffic to the review server.
+#   2. Creates an SSH key only for previews: ~/.ssh/factory_review_ed25519 (kept if it exists).
+#   3. Adds the host "factory-review" to ~/.ssh/config and pins the server's host key
 #      in ~/.ssh/known_hosts, so ssh never has to ask whether to trust it.
-#   3. Installs the "review" command into ~/.local/bin.
-#   4. Prints your PUBLIC key: send that to the factory owner. Never send the file
-#      without .pub; it stays on this computer.
-# Safe to run again (e.g. to update review, or after the server address changes).
+#   4. Installs the "review" command into ~/.local/bin.
+#   5. Prints your two PUBLIC keys: send them to the factory owner. The private keys
+#      never leave this computer.
+# Safe to run again (e.g. to update review, or with a new invitation).
 set -euo pipefail
 BASE="${FACTORY_REVIEW_BASE:-https://raw.githubusercontent.com/atakumi-global/factory-standards/main/review}"
-server="${1:-}"; hostkey="${2:-}"
-usage() { echo 'usage: bash review-setup.sh <address> "<ssh-ed25519 AAAA...>"  (both from the invitation)' >&2; exit 2; }
-[[ "$server" =~ ^[A-Za-z0-9.-]+$ ]] || usage
+server="${1:-}"; port="${2:-}"; hostkey="${3:-}"; vpn_ip="${4:-}"; vpn_server_key="${5:-}"; endpoint="${6:-}"
+usage() {
+  echo 'usage: bash review-setup.sh <server> <port> "<host key>" <vpn address> "<vpn server key>" <endpoint>' >&2
+  echo "       (copy the whole line from the invitation)" >&2
+  exit 2
+}
+ip4='^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'
+[[ "$server" =~ $ip4 ]] && [[ "$vpn_ip" =~ $ip4 ]] && [[ "$port" =~ ^[0-9]{1,5}$ ]] || usage
+[[ "$vpn_server_key" =~ ^[A-Za-z0-9+/]{42}[AEIMQUYcgkosw480]=$ ]] || usage
+[[ "$endpoint" =~ ^[A-Za-z0-9.-]+:[0-9]{1,5}$ ]] || usage
 read -r hk_type hk_data _ <<< "$hostkey"
 [[ "${hk_type:-}" =~ ^(ssh-ed25519|ecdsa-sha2-nistp256|ssh-rsa)$ ]] && [[ "${hk_data:-}" =~ ^[A-Za-z0-9+/=]+$ ]] || usage
 for c in ssh ssh-keygen curl; do command -v "$c" >/dev/null || { echo "missing: $c" >&2; exit 1; }; done
+command -v wg >/dev/null || {
+  echo "missing: wg (macOS: brew install wireguard-tools; Linux: install wireguard-tools)" >&2; exit 1; }
 
-echo "== 1. SSH key for previews"
+echo "== 1. WireGuard tunnel factory-review"
+vpn_dir="$HOME/factory-review"; tunnel="$vpn_dir/factory-review.conf"
+mkdir -p "$vpn_dir"; chmod 700 "$vpn_dir"
+private=""
+[ -f "$tunnel" ] && private="$(sed -n 's/^PrivateKey[[:space:]]*=[[:space:]]*\([^[:space:]]*\)[[:space:]]*$/\1/p' "$tunnel" | head -1)"
+if [ -n "$private" ]; then echo "kept your key from $tunnel"
+else private="$(wg genkey)"; echo "created your WireGuard key"; fi
+vpn_public="$(printf '%s\n' "$private" | wg pubkey)"
+(umask 077; cat > "$tunnel" <<EOF
+[Interface]
+PrivateKey = $private
+Address = $vpn_ip/32
+
+[Peer]
+PublicKey = $vpn_server_key
+Endpoint = $endpoint
+AllowedIPs = $server/32
+PersistentKeepalive = 25
+EOF
+)
+echo "ok: $tunnel"
+
+echo "== 2. SSH key for previews"
 mkdir -p "$HOME/.ssh"; chmod 700 "$HOME/.ssh"
 key="$HOME/.ssh/factory_review_ed25519"
 if [ -f "$key" ]; then
   echo "kept: $key"
 else
-  # No passphrase: the key only opens previews you were given, from your WireGuard
-  # connection, and review runs the tunnel in the background without asking.
+  # No passphrase: the key only opens the previews you were given, only through your
+  # factory-review tunnel, and review runs the SSH tunnel in the background.
   ssh-keygen -q -t ed25519 -N '' -C "$(id -un)@$(hostname -s 2>/dev/null || hostname) factory-review" -f "$key"
   echo "created: $key"
 fi
 
-echo "== 2. SSH host factory-review"
+echo "== 3. SSH host factory-review"
 config="$HOME/.ssh/config"; touch "$config"; chmod 600 "$config"
 tmp="$(mktemp)"
 {
   echo '# factory-review: dev previews (written by review-setup)'
   echo 'Host factory-review'
   echo "  HostName $server"
+  echo "  Port $port"
   echo '  User review'
   echo '  IdentityFile ~/.ssh/factory_review_ed25519'
   echo '  IdentitiesOnly yes'
@@ -50,12 +86,13 @@ tmp="$(mktemp)"
   awk '/^# factory-review: dev previews/ {skip=1; next} skip && /^# end factory-review/ {skip=0; next} !skip' "$config"
 } > "$tmp"
 cat "$tmp" > "$config"; rm -f "$tmp"
+if [ "$port" = 22 ]; then host_id="$server"; else host_id="[$server]:$port"; fi
 known="$HOME/.ssh/known_hosts"; touch "$known"
-grep -v "^$server " "$known" > "$known.tmp" || true
-echo "$server $hk_type $hk_data" >> "$known.tmp"; mv "$known.tmp" "$known"; chmod 600 "$known"
-echo "ok: factory-review = review@$server, host key pinned"
+grep -vF "$host_id " "$known" > "$known.tmp" || true
+echo "$host_id $hk_type $hk_data" >> "$known.tmp"; mv "$known.tmp" "$known"; chmod 600 "$known"
+echo "ok: factory-review = review@$server:$port, host key pinned"
 
-echo "== 3. The review command"
+echo "== 4. The review command"
 mkdir -p "$HOME/.local/bin"
 curl -fsSL "$BASE/review" -o "$HOME/.local/bin/review.new"
 head -1 "$HOME/.local/bin/review.new" | grep -q '^#!/usr/bin/env bash' || { echo "download of review failed" >&2; exit 1; }
@@ -67,9 +104,13 @@ case ":$PATH:" in *":$HOME/.local/bin:"*) ;; *)
 esac
 
 echo
-echo "== 4. Send this PUBLIC key to the factory owner:"
+echo "== 5. Send these two PUBLIC keys to the factory owner:"
 echo
-cat "$key.pub"
+echo "ssh:       $(cat "$key.pub")"
+echo "wireguard: $vpn_public"
 echo
-echo "When the owner confirms you are added: switch on your WireGuard connection, open a"
+echo "Next, import the tunnel file $tunnel:"
+echo "  macOS:  WireGuard app > Import Tunnel(s) from File"
+echo "  Linux:  nmcli connection import type wireguard file $tunnel   (or: sudo wg-quick up $tunnel)"
+echo "When the owner confirms you are added: switch the factory-review tunnel on, open a"
 echo "new terminal and run:   review status"
