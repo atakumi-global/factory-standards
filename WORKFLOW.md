@@ -41,8 +41,9 @@ git push origin dev                     # 4. publish dev
 ```
 
 5. Restart the local environment with `./stack.sh restart` (see `STACK.md`) — never
-   hand-spawn servers. On the agent server skip this (`finish-work --no-restart`): the
-   dev preview restarts from `dev` by itself within about two minutes.
+   hand-spawn servers. On the agent server skip this (`finish-work --no-restart`): a dev
+   preview that is in use restarts from `dev` by itself within about two minutes, and
+   one that is not starts on the latest `dev` when someone opens it.
 6. In GitHub: promote `dev` → stage (manual), then stage → production (manual,
    approved in the `prod` environment). Promotion is never done locally and
    never by an agent.
