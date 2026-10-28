@@ -1,26 +1,26 @@
 #!/usr/bin/env bash
-# review: open a project's dev preview from the factory's agent server (Linux, macOS).
-# Installed by review-setup.sh; the same commands as review.ps1 (Windows).
+# peek: open a project's dev preview from the factory's agent server (Linux, macOS).
+# Installed by peek-setup.sh; the same commands as peek.ps1 (Windows).
 #
-#   review airtime start     start the preview if needed, tunnel in the background,
+#   peek airtime start     start the preview if needed, tunnel in the background,
 #                            print the links and open the browser
-#   review airtime stop      close your tunnel (the server stops the preview itself
+#   peek airtime stop      close your tunnel (the server stops the preview itself
 #                            2 hours after the last tunnel closes)
-#   review airtime status    the preview's state on the server and your tunnel
-#   review status            all previews you have access to
+#   peek airtime status    the preview's state on the server and your tunnel
+#   peek status            all previews you have access to
 #
 # The project is its Plane identifier (AIRTIME), its key (ATAK-AIRTIME) or its name, in
-# any case; "review start airtime" works too. No terminal stays open: the tunnel is a
-# background ssh process. Connects to the SSH host "factory-review" (written by
-# review-setup.sh into ~/.ssh/config); you need your WireGuard connection on.
+# any case; "peek start airtime" works too. No terminal stays open: the tunnel is a
+# background ssh process. Connects to the SSH host "factory-peek" (written by
+# peek-setup.sh into ~/.ssh/config); you need your WireGuard connection on.
 # Works with the bash 3.2 that ships with macOS.
 set -uo pipefail
-SSH_HOST="${FACTORY_REVIEW_HOST:-factory-review}"
+SSH_HOST="${FACTORY_PEEK_HOST:-factory-peek}"
 # Local ports = the project's ports + this offset (e.g. 10000 when something on your
 # computer already uses 3500-3509: the preview then opens on 13500).
-OFFSET="${FACTORY_REVIEW_PORT_OFFSET:-0}"
-[[ "$OFFSET" =~ ^[0-9]+$ ]] || { echo "FACTORY_REVIEW_PORT_OFFSET must be a number" >&2; exit 2; }
-state="${XDG_STATE_HOME:-$HOME/.local/state}/factory-review"
+OFFSET="${FACTORY_PEEK_PORT_OFFSET:-0}"
+[[ "$OFFSET" =~ ^[0-9]+$ ]] || { echo "FACTORY_PEEK_PORT_OFFSET must be a number" >&2; exit 2; }
+state="${XDG_STATE_HOME:-$HOME/.local/state}/factory-peek"
 mkdir -p "$state"
 
 no_browser=0
@@ -35,7 +35,7 @@ case "$first" in
 esac
 [ -n "$action" ] || action=status
 case "$action" in start|stop|status) ;; *)
-  echo "usage: review <project> start|stop|status   or   review status" >&2; exit 2 ;;
+  echo "usage: peek <project> start|stop|status   or   peek status" >&2; exit 2 ;;
 esac
 
 gate() { # gate <request>: output of the review gate, or a clear message and exit
@@ -70,7 +70,7 @@ open_url() {
 }
 
 if [ -z "$name" ]; then
-  [ "$action" = status ] || { echo "usage: review <project> $action" >&2; exit 2; }
+  [ "$action" = status ] || { echo "usage: peek <project> $action" >&2; exit 2; }
   gate status; exit 0
 fi
 
@@ -107,7 +107,7 @@ show_links() {
   echo "$pname ($key) dev preview"
   echo "  App:     $app"
   echo "  Ports:   $lbase-$((lbase + 9)) on this computer, forwarded from the agent server"
-  echo "  Close:   review $label stop"
+  echo "  Close:   peek $label stop"
 }
 
 if [ "$action" = start ]; then
@@ -132,11 +132,11 @@ if [ "$action" = start ]; then
       echo "The preview did not start:"
       cat "$out_file" "$err_file" 2>/dev/null | grep -v '^in use ' | sed 's/^/  /'
       echo "If a port is 'already in use', something on your computer uses $lbase-$((lbase + 9));"
-      echo "then try e.g.: FACTORY_REVIEW_PORT_OFFSET=10000 review $label start"
+      echo "then try e.g.: FACTORY_PEEK_PORT_OFFSET=10000 peek $label start"
       rm -f "$pid_file"; exit 1
     fi
     answers "$probe" && break
-    if [ "$waited" -ge 900 ]; then echo "Not up after 15 minutes; the tunnel is left open. Check: review $label status"; exit 1; fi
+    if [ "$waited" -ge 900 ]; then echo "Not up after 15 minutes; the tunnel is left open. Check: peek $label status"; exit 1; fi
     [ $((waited % 16)) -eq 0 ] && echo "  still starting..."
   done
   show_links

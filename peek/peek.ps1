@@ -1,17 +1,17 @@
-# review: open a project's dev preview from the factory's agent server (Windows).
-# Installed by review-setup.ps1; the same commands as review (Linux, macOS).
+# peek: open a project's dev preview from the factory's agent server (Windows).
+# Installed by peek-setup.ps1; the same commands as peek (Linux, macOS).
 #
-#   review airtime start     start the preview if needed, tunnel in the background,
+#   peek airtime start     start the preview if needed, tunnel in the background,
 #                            print the links and open the browser
-#   review airtime stop      close your tunnel (the server stops the preview itself
+#   peek airtime stop      close your tunnel (the server stops the preview itself
 #                            2 hours after the last tunnel closes)
-#   review airtime status    the preview's state on the server and your tunnel
-#   review status            all previews you have access to
+#   peek airtime status    the preview's state on the server and your tunnel
+#   peek status            all previews you have access to
 #
 # The project is its Plane identifier (AIRTIME), its key (ATAK-AIRTIME) or its name, in
-# any case; "review start airtime" works too. No window stays open: the tunnel is a
-# hidden ssh process. Connects to the SSH host "factory-review" (written by
-# review-setup.ps1 into ~/.ssh/config); you need your WireGuard connection on.
+# any case; "peek start airtime" works too. No window stays open: the tunnel is a
+# hidden ssh process. Connects to the SSH host "factory-peek" (written by
+# peek-setup.ps1 into ~/.ssh/config); you need your WireGuard connection on.
 param(
   [Parameter(Position = 0)][string]$First,
   [Parameter(Position = 1)][string]$Second,
@@ -19,21 +19,21 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
-$SshHost = 'factory-review'
+$SshHost = 'factory-peek'
 # Local ports = the project's ports + this offset (e.g. 10000 when something on your
 # computer already uses 3500-3509: the preview then opens on 13500).
 $Offset = 0
-if ($env:FACTORY_REVIEW_PORT_OFFSET) {
-  if ($env:FACTORY_REVIEW_PORT_OFFSET -notmatch '^[0-9]+$') { Write-Host "FACTORY_REVIEW_PORT_OFFSET must be a number"; exit 2 }
-  $Offset = [int]$env:FACTORY_REVIEW_PORT_OFFSET
+if ($env:FACTORY_PEEK_PORT_OFFSET) {
+  if ($env:FACTORY_PEEK_PORT_OFFSET -notmatch '^[0-9]+$') { Write-Host "FACTORY_PEEK_PORT_OFFSET must be a number"; exit 2 }
+  $Offset = [int]$env:FACTORY_PEEK_PORT_OFFSET
 }
-$State = Join-Path $env:LOCALAPPDATA 'factory-review'
+$State = Join-Path $env:LOCALAPPDATA 'factory-peek'
 New-Item -ItemType Directory -Force -Path $State | Out-Null
 
 $actions = @('start', 'stop', 'status')
 if ($actions -contains $First) { $Action = $First; $Name = $Second } else { $Name = $First; $Action = $Second }
 if (-not $Action) { $Action = 'status' }
-if ($actions -notcontains $Action) { Write-Host "usage: review <project> start|stop|status   or   review status"; exit 2 }
+if ($actions -notcontains $Action) { Write-Host "usage: peek <project> start|stop|status   or   peek status"; exit 2 }
 
 function Invoke-Gate([string]$request) {
   $out = ssh -o BatchMode=yes -o ConnectTimeout=10 $SshHost $request 2>&1
@@ -59,9 +59,9 @@ function Test-Answers($url) {
   catch { if ($_.Exception.Response) { return $true } else { return $false } }
 }
 
-# ---------------------------------------------------------------- review status (all)
+# ---------------------------------------------------------------- peek status (all)
 if (-not $Name) {
-  if ($Action -ne 'status') { Write-Host "usage: review <project> $Action"; exit 2 }
+  if ($Action -ne 'status') { Write-Host "usage: peek <project> $Action"; exit 2 }
   Invoke-Gate 'status' | ForEach-Object { Write-Host $_ }
   exit 0
 }
@@ -91,7 +91,7 @@ function Show-Links {
   Write-Host "$($proj.Name) ($($proj.Key)) dev preview"
   Write-Host "  App:     $app"
   Write-Host "  Ports:   $lbase-$($lbase + 9) on this computer, forwarded from the agent server"
-  Write-Host "  Close:   review $label stop"
+  Write-Host "  Close:   peek $label stop"
 }
 
 if ($Action -eq 'start') {
@@ -117,12 +117,12 @@ if ($Action -eq 'start') {
       Write-Host "The preview did not start:"
       Get-Content $outFile, $errFile -ErrorAction SilentlyContinue | Where-Object { $_ -notlike 'in use *' } | ForEach-Object { Write-Host "  $_" }
       Write-Host "If a port is 'already in use', something on your computer uses $lbase-$($lbase + 9);"
-      Write-Host "then try:  `$env:FACTORY_REVIEW_PORT_OFFSET = 10000; review $label start"
+      Write-Host "then try:  `$env:FACTORY_PEEK_PORT_OFFSET = 10000; peek $label start"
       Remove-Item $pidFile -ErrorAction SilentlyContinue
       exit 1
     }
     if (Test-Answers $probe) { break }
-    if ((Get-Date) -gt $deadline) { Write-Host "Not up after 15 minutes; the tunnel is left open. Check: review $label status"; exit 1 }
+    if ((Get-Date) -gt $deadline) { Write-Host "Not up after 15 minutes; the tunnel is left open. Check: peek $label status"; exit 1 }
     if ((Get-Date) -gt $next) { Write-Host "  still starting..."; $next = (Get-Date).AddSeconds(15) }
   }
   Show-Links
