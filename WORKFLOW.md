@@ -81,6 +81,9 @@ Common deviations, each recorded in the affected repository's `AGENTS.md`:
   (server sandboxes, Linux/macOS) perform steps 1–5 mechanically, with guards:
   feature branch with a work-item id, clean tree, protected-branch refusal, gate
   command required, `factory-check` required, no force-push ever.
+- In a git worktree whose `dev` is checked out elsewhere (Orca workspaces on the agent
+  server) `finish-work.sh` merges on a detached HEAD at `origin/dev` and pushes
+  `HEAD:dev`; the result is the same merge commit on `dev`.
 - Agents with command support may wrap it (for example a `/finish-work` command): it
   re-retrieves the Plane item, runs the script with the repository's gates, then
   comments evidence and sets **In Review**.

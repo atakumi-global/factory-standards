@@ -5,6 +5,12 @@ one, PATCH clarifies.
 
 ## Unreleased
 
+- Added: `agents/lead.md` and `agents/worker.md`. A lead developer agent reads the
+  project's Todo queue from Plane, plans, and hands each item to a worker agent in its
+  own Orca workspace; workers read their item from Plane themselves and stop at In Review.
+- `finish-work.sh`: works inside a git worktree whose `dev` is checked out elsewhere (Orca
+  workspaces): merges on a detached HEAD at `origin/dev` and pushes `HEAD:dev`.
+
 - Added: `STACK.md` and `templates/stack.sh`, one stack script contract for every
   project (`start|stop|restart|status|url|logs`, registry ports, loopback only,
   development secrets only). Agents on the agent server do not run the stack in
