@@ -8,6 +8,9 @@ one, PATCH clarifies.
 - Added: `agents/lead.md` and `agents/worker.md`. A lead developer agent reads the
   project's Todo queue from Plane, plans, and hands each item to a worker agent in its
   own Orca workspace; workers read their item from Plane themselves and stop at In Review.
+- `agents/`: the lead reuses an item's earlier workspace (finished work whose merge was
+  stopped) instead of starting over; workers continue from it and install dependencies
+  first when `dev` changed them.
 - `finish-work.sh`: works inside a git worktree whose `dev` is checked out elsewhere (Orca
   workspaces): merges on a detached HEAD at `origin/dev` and pushes `HEAD:dev`.
 

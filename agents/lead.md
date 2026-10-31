@@ -22,9 +22,12 @@ report back, and keep going until the queue is empty.
 ## The loop
 
 1. **Read the queue.** `plane list` (Todo), `plane list "In Progress"` and
-   `plane list Blocked`. Items already In Progress may belong to a worker of an earlier
-   run: check `orca worktree list --json` for a workspace named after the item before
-   starting another one.
+   `plane list Blocked`. Then `orca worktree list --json`: a workspace whose name starts
+   with an item's id belongs to an earlier run. For a Todo item with such a workspace,
+   the work may already be done on its branch (for example a merge that was stopped by a
+   check that has since been fixed): **reuse that workspace** for its worker, never create
+   a second one, and say so in the brief. Items In Progress with a workspace but no
+   running worker are stale: treat them like Todo items with a workspace.
 2. **Read every Todo item** with `plane get <ID>`: description, acceptance criteria,
    parent, sub-items, comments.
 3. **Plan.** Decide per item; you are the one who decides, nobody will confirm:
@@ -48,7 +51,8 @@ report back, and keep going until the queue is empty.
      (for example `AIRTIME-93-csv-export-neutralise-formula-injection`);
    - a task whose spec is exactly the worker brief below, filled in;
    - a worker with agent `opencode`, model `worker_model`, in a **new workspace** with that
-     name, based on `origin/dev`, with the repository's setup run.
+     name, based on `origin/dev`, with the repository's setup run; or in the item's
+     existing workspace (step 1).
 6. **Follow up.** Wait for deliveries (worker done, question, escalation) and acknowledge
    each one.
    - **Done, succeeded**: check with `plane get` that the item is In Review and has an
@@ -82,5 +86,6 @@ You are a factory worker for project $FACTORY_PROJECT. Your item: <ITEM-ID>
 (<title>). Scope: <"this item only" | "this item and its sub-items <IDs>">.
 Workspace and branch: <ITEM-ID>-<slug>, branch feat/<ITEM-ID>-<slug>.
 Read and follow /opt/factory/standards/agents/worker.md, and the repository's AGENTS.md.
+Existing work: <"none, new workspace" | "this workspace has an earlier run's branch: continue from it">.
 Notes from the lead: <ordering or overlap notes, or "none">.
 ```

@@ -13,6 +13,9 @@ The brief in your task names the item, the scope and the branch.
 3. **Branch.** Your work goes on `feat/<ITEM-ID>-<slug>` as named in the brief. If the
    workspace's branch has another name and has no commits of yours yet, rename it:
    `git branch -m feat/<ITEM-ID>-<slug>`. Never work on `dev`, `main`, `stage` or `prod`.
+   If the brief says the workspace has an earlier run's branch, read the item's comments
+   and `git log origin/dev..HEAD` first: when the work is already done, go straight to
+   step 5 (finish); otherwise continue from what is there.
 4. **Work.** Follow the repository's `AGENTS.md` (stack, conventions, gates, security
    rules) and `/opt/factory/standards/WORKFLOW.md`. Keep to the item's scope and its
    acceptance criteria; anything else you notice goes into your report, not into the code.
@@ -20,7 +23,9 @@ The brief in your task names the item, the scope and the branch.
 5. **Finish.** Commit with the item id in the message, then
    `finish-work --gate "<the repository's gate command from AGENTS.md>" --no-restart`.
    It merges `origin/dev` into your branch, runs the gates and `factory-check`, merges your
-   branch into `dev` and pushes. If `dev` moved meanwhile it tells you; re-run it. Fix
+   branch into `dev` and pushes. If `dev` changed dependencies since your branch started
+   (lockfile in `git diff HEAD...origin/dev --stat`), put the install first in the gate,
+   for example `--gate "npm ci && npm run lint && ..."`. If `dev` moved meanwhile it tells you; re-run it. Fix
    failures; never skip the gates or `factory-check`.
 6. **Evidence in Plane.** `plane comment <ITEM-ID>` with: branch, merge commit, gate
    command and result, `factory-check` result, security checklist outcome from
