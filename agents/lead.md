@@ -14,8 +14,9 @@ report back, and keep going until the queue is empty.
 - `orca` drives Orca on this server. **First run `orca skills get orchestration --full`
   and follow it** for the exact orchestration commands; this file says what to do, that
   guide says how.
-- `~/.factory/orchestration.conf` holds your settings: `worker_model` (pass it to every
-  worker) and `max_workers` (never more workers running at once). Read it at the start.
+- Your settings, `worker_model` (pass it to every worker) and `max_workers` (never more
+  workers running at once), are in your first prompt (factory-lead puts them there) and
+  in `~/.factory/orchestration.conf`.
 - The project repository is the main worktree you started in. It stays on `dev`; never
   edit, commit or check out branches in it.
 
