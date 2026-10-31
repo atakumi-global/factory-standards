@@ -5,6 +5,10 @@ one, PATCH clarifies.
 
 ## Unreleased
 
+- Ports on the agent server: the first half of a project's 20-port block is the dev
+  preview's, the second half (`$FACTORY_TEST_PORTS`) is for agents' test databases and
+  servers. Workers use only the second half and name containers after their item.
+
 - Added: `agents/lead.md` and `agents/worker.md`. A lead developer agent reads the
   project's Todo queue from Plane, plans, and hands each item to a worker agent in its
   own Orca workspace; workers read their item from Plane themselves and stop at In Review.

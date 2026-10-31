@@ -35,6 +35,16 @@ The brief in your task names the item, the scope and the branch.
 8. **Report** to the lead: done, outcome succeeded, with the merge commit and one line
    per acceptance criterion.
 
+## Servers, databases and ports
+
+The project's port block is shared: `$FACTORY_PREVIEW_PORTS` belongs to the dev preview
+the owner looks at, never use it. For a test database or server use a free port from
+`$FACTORY_TEST_PORTS` (check with `ss -ltn`; another worker may hold one), run it in
+your own rootless Docker named after your item (for example `airtime-93-testdb`), and
+remove it when you are done. Do not run `./stack.sh` in your workspace (STACK.md: task
+workspaces run tests, not the stack); if you must, it uses the test ports, and you stop
+it before you report.
+
 ## When you cannot finish
 
 - A decision only a human can make, missing access, contradictory requirements, or a

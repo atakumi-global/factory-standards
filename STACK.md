@@ -46,7 +46,7 @@ Rules:
 | --- | --- | --- |
 | Owner's laptop | the owner, with `./stack.sh` (or the project's `.ps1` on Windows) | `local` |
 | Agent server, dev preview | the preview service, on demand when the owner opens it | `preview` |
-| Agent server, task workspace | nobody: agents run tests and gates there, not the stack | — |
+| Agent server, task workspace | nobody: agents run tests and gates there, not the stack; test databases use the project's test ports (`$FACTORY_TEST_PORTS`, the second half of its block) | `agent` |
 
 The dev preview shows the latest `dev` and runs only while the owner uses it. The owner
 opens it with `factory-preview <PROJECT>` on the laptop: that starts the stack on the
