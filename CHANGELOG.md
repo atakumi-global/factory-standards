@@ -5,6 +5,10 @@ one, PATCH clarifies.
 
 ## Unreleased
 
+- `STACK.md`: the health URL proves the app is usable (its own database by instance
+  name, migrations applied, a real query, required services), with a JSON body per
+  check; compose services do not restart by themselves.
+
 - A broken dev preview is the factory's own work: the preview watchdog reports it as an
   urgent Todo item "Dev preview does not start" (with the commits and logs); the lead
   dispatches it first, the worker fixes the cause in the code with a test.

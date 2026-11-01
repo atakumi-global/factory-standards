@@ -30,6 +30,10 @@ Rules:
    owner's Docker locally. Compose project name `<project>-<instance>`
    (`STACK_INSTANCE`, default `local`; the dev preview uses `preview`), so instances
    never share containers or volumes.
+   On the agent server `STACK_INSTANCE` and `STACK_BASE_PORT` are always set (the
+   agents' test ports, instance `agent`); the defaults are for the owner's laptop only.
+   Compose services do not use `restart: always` or `unless-stopped`, so nothing comes
+   back by itself after `stop` or after its workspace is gone.
 4. **Development secrets only, outside the repository.** On first start the script
    writes random values to `~/.local/state/stack/<project>-<instance>.env`, outside the
    working tree, so `factory-check` never flags them and they can never be committed.
@@ -37,7 +41,19 @@ Rules:
 5. **Stop means everything.** The app runs in its own process group; `stop` ends the
    whole group (watchers included) and the compose services, keeping data volumes.
 6. **Healthy means usable.** `start` waits for the app's health URL and fails with the
-   last log lines if it does not come up.
+   last log lines if it does not come up. The health URL proves the app can do its job,
+   not only that the process answers. It returns 200 only when all of these hold, and
+   otherwise 503, with a short JSON body naming each check and its result (no secrets):
+   - **its own database**: the script passes `STACK_INSTANCE` to the app; the app
+     records the instance name in its database on first start and health fails when
+     the database it reached belongs to another instance (a stray container on the
+     same port then shows up at once instead of silently serving the wrong data);
+   - **migrations**: every migration in the code has been applied;
+   - **data**: a real query against the database succeeds (not only a connection);
+   - **services**: every service the app needs (extra database, search, mail, an
+     external API it cannot work without) answers.
+   Checks stay cheap (well under a second); the preview watchdog calls it every two
+   minutes.
 7. **No interactive prompts**, so the preview service can run it unattended.
 
 ## Where it runs

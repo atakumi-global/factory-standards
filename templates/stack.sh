@@ -15,6 +15,7 @@ HEALTH_PATH="/"                             # path that answers 200 when the app
 # ---------------------------------------------------------------- ports and names
 BASE_PORT="${STACK_BASE_PORT:-$DEFAULT_BASE_PORT}"
 INSTANCE="${STACK_INSTANCE:-local}"
+export STACK_INSTANCE="$INSTANCE"   # the app's health check records and compares it (STACK.md 6)
 export STACK_BIND=127.0.0.1
 export APP_PORT=$((BASE_PORT + 0)) API_PORT=$((BASE_PORT + 1)) DB_PORT=$((BASE_PORT + 2))
 export DB2_PORT=$((BASE_PORT + 3)) SEARCH_PORT=$((BASE_PORT + 4))
