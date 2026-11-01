@@ -28,7 +28,14 @@ report back, and keep going until the queue is empty.
    the work may already be done on its branch (for example a merge that was stopped by a
    check that has since been fixed): **reuse that workspace** for its worker, never create
    a second one, and say so in the brief. Items In Progress with a workspace but no
-   running worker are stale: treat them like Todo items with a workspace.
+   running worker are stale: treat them like Todo items with a workspace. A worker is
+   running when its workspace has an agent terminal that wrote output in the last 30
+   minutes (`orca terminal list --json`, `lastOutputAt`); leave those items alone, they
+   belong to another run.
+
+   You may have been woken by the scheduled automation (`/lead`, every 15 minutes, only
+   when Todo has items and no agent is busy). Then nobody is watching: do not wait for
+   answers, decide or set Blocked as below.
 2. **Read every Todo item** with `plane get <ID>`: description, acceptance criteria,
    parent, sub-items, comments.
 3. **Plan.** Decide per item; you are the one who decides, nobody will confirm:
