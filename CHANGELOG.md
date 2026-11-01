@@ -5,6 +5,10 @@ one, PATCH clarifies.
 
 ## Unreleased
 
+- Every item handed to a human (In Review) carries a tester's guide in Plane: `## How to
+  test` with Where, Before you start, Steps, Expected, Not covered. Workers write it, the
+  lead checks it, and the Plane broker refuses In Review without it.
+
 - Ports on the agent server: the first half of a project's 20-port block is the dev
   preview's, the second half (`$FACTORY_TEST_PORTS`) is for agents' test databases and
   servers. Workers use only the second half and name containers after their item.

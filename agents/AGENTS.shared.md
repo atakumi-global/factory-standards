@@ -67,6 +67,14 @@
   its result. "Should work" is not evidence, and an agent's success report is a
   claim, not a check.
 - Never claim a check you did not run. If something was skipped, say so.
+- **Tester's guide.** Every item that moves to **In Review** gets a Plane comment
+  `## How to test` with **Where** (environment, exact URL or build and how to open it,
+  e.g. `review <project> start`), **Before you start** (account, role, test data),
+  numbered **Steps** (real menu labels, buttons and sample values), **Expected** (what
+  the tester sees after each step, matching the acceptance criteria) and **Not covered**
+  (what you could not check). Written for a QA person who did not see the work: it must
+  be obvious where to go, what to do and what to look for. Agents on the agent server
+  cannot set In Review without it.
 
 ### Engineering discipline (non-negotiable)
 

@@ -31,8 +31,31 @@ The brief in your task names the item, the scope and the branch.
    command and result, `factory-check` result, security checklist outcome from
    `AGENTS.md`, and anything left for a human (follow-ups, risks, things you could not
    verify).
-7. **Hand over.** `plane state <ITEM-ID> "In Review"` (this assigns the owner).
-8. **Report** to the lead: done, outcome succeeded, with the merge commit and one line
+7. **Tester's guide in Plane.** A second comment, written for a person who did not see
+   your work and is not a developer, so that it is impossible to miss what to do. Use
+   exactly these headings (the broker refuses In Review without them):
+
+   ```
+   ## How to test
+   Where: the environment and how to get there. Usually the dev preview: on the owner's
+   laptop `review <project> start`, which opens <the exact URL and page>. For desktop
+   work: which build, how to start it (for example `npm run tauri dev` on Windows), and
+   that it has not been run on Windows yet if you could not.
+   Before you start: the account, role, workspace or test data needed, and how to get it.
+   Steps:
+   1. Each click, field and value, one per line, starting from the page under Where.
+   2. ...
+   Expected:
+   1. What the tester should see after each step, matching the acceptance criteria.
+   2. ...
+   Not covered: what you could not check (platform, real data, browser) and any risk.
+   ```
+
+   Concrete names only: real menu labels, button texts, URLs and sample values, never
+   "verify it works". If an item has nothing a person can see (a refactor, a test-only
+   change), say so under Where and give the command that shows the result instead.
+8. **Hand over.** `plane state <ITEM-ID> "In Review"` (this assigns the owner).
+9. **Report** to the lead: done, outcome succeeded, with the merge commit and one line
    per acceptance criterion.
 
 ## Servers, databases and ports

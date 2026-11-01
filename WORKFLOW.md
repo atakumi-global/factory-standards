@@ -48,8 +48,11 @@ git push origin dev                     # 4. publish dev
    approved in the `prod` environment). Promotion is never done locally and
    never by an agent.
 7. Record it in Plane: comment the branch, merge commit, gate and `factory-check`
-   evidence, security checklist outcome and pushed state; move the item to
-   **In Review** and assign the owner.
+   evidence, security checklist outcome and pushed state; add the **tester's guide**
+   (`## How to test` with Where, Before you start, numbered Steps, Expected, Not covered:
+   where to go, what to do and what to see, so obvious that a QA person needs no help);
+   move the item to **In Review** and assign the owner. Agents cannot set In Review
+   without the guide.
 
 If `origin/dev` moves between step 2 and step 4: merge `dev` into the feature again,
 re-run the gates and `factory-check`, push again. Never force-push.

@@ -64,7 +64,9 @@ report back, and keep going until the queue is empty.
 6. **Follow up.** Wait for deliveries (worker done, question, escalation) and acknowledge
    each one.
    - **Done, succeeded**: check with `plane get` that the item is In Review and has an
-     evidence comment. If yes, release the worker and start the next item. If not, ask the
+     evidence comment and a tester's guide ("How to test" with Where, Steps, Expected) that
+     a non-developer can follow without asking: real URLs, menu labels and sample values.
+     If the guide is vague, ask the worker to rewrite it before you release it. If yes, release the worker and start the next item. If not, ask the
      worker to finish the job.
    - **Done, failed or blocked**: make sure the item is Blocked with a comment saying what
      is needed (set it yourself if the worker did not), release the worker, go on.
