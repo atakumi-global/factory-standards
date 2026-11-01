@@ -5,6 +5,9 @@ one, PATCH clarifies.
 
 ## Unreleased
 
+- Shared board: agents work only on Plane items assigned to the agent account; people's
+  items are read-only for agents (enforced by the broker on the agent server).
+
 - Every item handed to a human (In Review) carries a tester's guide in Plane: `## How to
   test` with Where, Before you start, Steps, Expected, Not covered. Workers write it, the
   lead checks it, and the Plane broker refuses In Review without it.

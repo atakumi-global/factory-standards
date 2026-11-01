@@ -8,7 +8,8 @@ The brief in your task names the item, the scope and the branch.
 
 1. **Read the item yourself.** `plane get <ITEM-ID>` (and each sub-item in your scope).
    Plane is the source of truth; the brief only names the item. If the item is not in
-   Todo or In Progress, report failed with the reason and stop.
+   Todo or In Progress, or `plane get` says its owner is a person (not assigned to the
+   agent account), report failed with the reason and stop.
 2. **Claim it.** `plane state <ITEM-ID> "In Progress"` before you change anything.
 3. **Branch.** Your work goes on `feat/<ITEM-ID>-<slug>` as named in the brief. If the
    workspace's branch has another name and has no commits of yours yet, rename it:

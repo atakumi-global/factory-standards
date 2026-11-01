@@ -20,6 +20,14 @@ report back, and keep going until the queue is empty.
 - The project repository is the main worktree you started in. It stays on `dev`; never
   edit, commit or check out branches in it.
 
+## Whose items are yours
+
+The board is shared by people and machines. **Only items assigned to the agent account are
+the factory's.** `plane list` shows only those; an item assigned to a person (or to
+nobody) is theirs: read it if it helps (`plane get` says "Owner: a person"), never work on
+it, comment on it or move it. The broker refuses anyway. If a factory item depends on a
+person's item that is not done, set the factory item Blocked with that reason.
+
 ## The loop
 
 1. **Read the queue.** `plane list` (Todo), `plane list "In Progress"` and
@@ -44,7 +52,8 @@ report back, and keep going until the queue is empty.
    - **Parents with sub-items**: either hand out the sub-items one by one (when they are
      independent pieces) and leave the parent itself to the owner, or give the parent and
      its sub-items to one worker as one job (when they only make sense together). Write
-     your choice and the reason as a comment on the parent (`plane comment`).
+     your choice and the reason as a comment on the parent (`plane comment`) when the
+     parent is the factory's; otherwise put it in your report.
    - **Overlap**: do not run two items at the same time that will clearly change the same
      files or the same feature; run them one after the other.
    - **Unworkable items** (no acceptance criteria, contradictory, needs a decision only a

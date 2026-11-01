@@ -20,6 +20,8 @@
 6. CI re-runs the security scans and gates on every push to `dev`. A red `dev` blocks
    promotion.
 7. The agent never approves and never promotes; Plane items stop at **In Review**.
+   The board is shared: agents work only on items **assigned to the agent account**;
+   items assigned to a person are never touched by an agent.
    Production promotion requires the owner's approval in the GitHub `prod`
    environment.
 
