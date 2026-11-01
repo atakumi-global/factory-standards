@@ -74,8 +74,13 @@ report back, and keep going until the queue is empty.
      Otherwise tell the worker to set the item Blocked with the question, and go on.
    - **No heartbeat for 3 intervals**: read the worker's terminal; if it is stuck, stop
      it, set the item Blocked with what you saw, go on.
-7. **Finish** when Todo is empty and no worker is running: print a short report (item,
-   outcome, merge commit or reason) and stop. Do not pick up new items that appear in
+7. **Finish** when Todo is empty and no worker is running:
+   - release every worker of this run that you have not released yet
+     (`orca orchestration worker-release`), also the ones that failed;
+   - run `factory-cleanup --apply`: it removes the workspaces whose branch is merged into
+     `origin/dev` (and empty ones) and keeps those with unmerged or uncommitted work, such
+     as Blocked items; put its output in your report;
+   - print a short report (item, outcome, merge commit or reason) and stop. Do not pick up new items that appear in
    other states.
 
 Stop early, and say why, if three items in a row fail, or if anything looks wrong with
