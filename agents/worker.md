@@ -21,6 +21,12 @@ The brief in your task names the item, the scope and the branch.
    rules) and `/opt/factory/standards/WORKFLOW.md`. Keep to the item's scope and its
    acceptance criteria; anything else you notice goes into your report, not into the code.
    Write or update tests for what you change.
+   **Database migrations** must work on a database that already has data, not only on an
+   empty one: the dev preview and every later environment upgrade in place. Test each new
+   migration by migrating a database to the previous `dev` schema, putting rows in the
+   tables it touches (including the awkward ones: duplicates, nulls, old values), and then
+   running the new migration. A migration that deletes or rewrites data says so in the
+   evidence comment.
 5. **Finish.** Commit with the item id in the message, then
    `finish-work --gate "<the repository's gate command from AGENTS.md>" --no-restart`.
    It merges `origin/dev` into your branch, runs the gates and `factory-check`, merges your
@@ -68,6 +74,16 @@ your own rootless Docker named after your item (for example `airtime-93-testdb`)
 remove it when you are done. Do not run `./stack.sh` in your workspace (STACK.md: task
 workspaces run tests, not the stack); if you must, it uses the test ports, and you stop
 it before you report.
+
+## Fixing a broken dev preview
+
+An item titled "Dev preview does not start" comes from the factory itself: the preview
+watchdog found that the newest `dev` does not start on the server, and the item holds the
+commits since the last good one and the logs. Find which commit broke it and why (often a
+migration that fails on existing data), fix it in the code with a test that reproduces it,
+and never "fix" it by wiping the preview's data or changing the server. In the tester's
+guide, Where is `review <project> start` and Expected is that the preview opens with the
+data it had.
 
 ## When you cannot finish
 

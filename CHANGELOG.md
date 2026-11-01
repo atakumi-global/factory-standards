@@ -5,6 +5,12 @@ one, PATCH clarifies.
 
 ## Unreleased
 
+- A broken dev preview is the factory's own work: the preview watchdog reports it as an
+  urgent Todo item "Dev preview does not start" (with the commits and logs); the lead
+  dispatches it first, the worker fixes the cause in the code with a test.
+- Database migrations are tested upgrading a database that already has data, not only an
+  empty one (`agents/worker.md`).
+
 - Shared board: agents work only on Plane items assigned to the agent account; people's
   items are read-only for agents (enforced by the broker on the agent server).
 

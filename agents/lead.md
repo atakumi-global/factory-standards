@@ -49,6 +49,9 @@ person's item that is not done, set the factory item Blocked with that reason.
 3. **Plan.** Decide per item; you are the one who decides, nobody will confirm:
    - **Order**: urgent, high, medium, low, none; within a priority, the order `plane list`
      gives. Sub-items an item depends on go first.
+   - **"Dev preview does not start"** (urgent, created by the factory's preview watchdog):
+     `dev` itself is broken, so it goes first and nothing that touches the same area runs
+     beside it. It is this project's code, not factory infrastructure: dispatch it.
    - **Parents with sub-items**: either hand out the sub-items one by one (when they are
      independent pieces) and leave the parent itself to the owner, or give the parent and
      its sub-items to one worker as one job (when they only make sense together). Write
