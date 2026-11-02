@@ -5,6 +5,10 @@ one, PATCH clarifies.
 
 ## Unreleased
 
+- Tester's guides name a working login (account, role, and the password or where it is
+  written down for that environment), so anyone can test without asking; the lead checks
+  it (`agents/worker.md`, `agents/lead.md`, `agents/AGENTS.shared.md`).
+
 - `STACK.md`: the health URL proves the app is usable (its own database by instance
   name, migrations applied, a real query, required services), with a JSON body per
   check; compose services do not restart by themselves.

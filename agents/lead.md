@@ -76,8 +76,9 @@ person's item that is not done, set the factory item Blocked with that reason.
 6. **Follow up.** Wait for deliveries (worker done, question, escalation) and acknowledge
    each one.
    - **Done, succeeded**: check with `plane get` that the item is In Review and has an
-     evidence comment and a tester's guide ("How to test" with Where, Steps, Expected) that
-     a non-developer can follow without asking: real URLs, menu labels and sample values.
+     evidence comment and a tester's guide ("How to test" with Where, Before you start,
+     Steps, Expected) that a non-developer can follow without asking: real URLs, menu
+     labels, sample values and a login (account and password, or where it is written).
      If the guide is vague, ask the worker to rewrite it before you release it. If yes, release the worker and start the next item. If not, ask the
      worker to finish the job.
    - **Done, failed or blocked**: make sure the item is Blocked with a comment saying what

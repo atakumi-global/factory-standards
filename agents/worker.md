@@ -48,7 +48,10 @@ The brief in your task names the item, the scope and the branch.
    laptop `review <project> start`, which opens <the exact URL and page>. For desktop
    work: which build, how to start it (for example `npm run tauri dev` on Windows), and
    that it has not been run on Windows yet if you could not.
-   Before you start: the account, role, workspace or test data needed, and how to get it.
+   Before you start: the login, so that anyone can test without asking: the account
+   (email and role) and its password, or exactly where the password is written down for
+   that environment (the project's documented test logins). Plus the workspace or test
+   data needed, and how to get it.
    Steps:
    1. Each click, field and value, one per line, starting from the page under Where.
    2. ...
@@ -59,7 +62,9 @@ The brief in your task names the item, the scope and the branch.
    ```
 
    Concrete names only: real menu labels, button texts, URLs and sample values, never
-   "verify it works". If an item has nothing a person can see (a refactor, a test-only
+   "verify it works". A guide without a working login is not finished: if the project
+   has no documented test login for that environment, say so under Before you start and
+   name it as a gap in your evidence comment. If an item has nothing a person can see (a refactor, a test-only
    change), say so under Where and give the command that shows the result instead.
 8. **Hand over.** `plane state <ITEM-ID> "In Review"` (this assigns the owner).
 9. **Report** to the lead: done, outcome succeeded, with the merge commit and one line
