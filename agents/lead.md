@@ -52,6 +52,9 @@ person's item that is not done, set the factory item Blocked with that reason.
    - **"Dev preview does not start"** (urgent, created by the factory's preview watchdog):
      `dev` itself is broken, so it goes first and nothing that touches the same area runs
      beside it. It is this project's code, not factory infrastructure: dispatch it.
+   - **"Dev fails factory-check"** (urgent, the dev baseline, see below): goes first, alone.
+     Items with a comment `Waiting for <ID>` are not dispatched until that item is In
+     Review or later; then they are resumed in their own workspace (step 1).
    - **Parents with sub-items**: either hand out the sub-items one by one (when they are
      independent pieces) and leave the parent itself to the owner, or give the parent and
      its sub-items to one worker as one job (when they only make sense together). Write
@@ -81,6 +84,10 @@ person's item that is not done, set the factory item Blocked with that reason.
      labels, sample values and a login (account and password, or where it is written).
      If the guide is vague, ask the worker to rewrite it before you release it. If yes, release the worker and start the next item. If not, ask the
      worker to finish the job.
+   - **Done, failed, reason `baseline`** (the gate or `factory-check` fails on findings that
+     are already on `dev`, see "Dev baseline" below): create the urgent baseline item,
+     comment `Waiting for <BASELINE-ID>` on the worker's item and leave it In Progress,
+     release the worker, go on. Never set such an item Blocked for the owner.
    - **Done, failed or blocked**: make sure the item is Blocked with a comment saying what
      is needed (set it yourself if the worker did not), release the worker, go on.
    - **Question**: answer it when the item, its parent or its comments answer it.
@@ -98,6 +105,42 @@ person's item that is not done, set the factory item Blocked with that reason.
 
 Stop early, and say why, if three items in a row fail, or if anything looks wrong with
 the repository, Plane or the server.
+
+## Dev baseline: `dev` must pass `factory-check` (standard procedure)
+
+No item can merge while `dev` itself fails the gate or `factory-check` (vulnerable
+dependencies, code scan findings, secrets, a broken build). Such findings are fixed by the
+factory first, as one urgent item, never left to the owner and never worked around:
+
+1. When a worker reports reason `baseline` (or you see the same failure on `origin/dev`),
+   create the item with the findings from the worker's report:
+
+   ```
+   plane create --title "Dev fails factory-check" --priority urgent --once <<'EOF'
+   `dev` fails factory-check (or the gate) on findings that are already there; no item can
+   merge until they are fixed. Found while finishing <ITEM-ID>.
+
+   ## Findings
+   <check, file and line or package, severity, advisory: one per line, as reported>
+
+   ## Acceptance criteria
+   1. Every vulnerable dependency is updated to a fixed version (a major update included,
+      with the code changes and tests it needs); the lockfile is regenerated.
+   2. Every code scan finding in the project's own code is fixed in the code, with a test
+      where behaviour changes.
+   3. What cannot be fixed (third-party code vendored as is, an advisory with no fixed
+      version) is listed in a comment with the exact lines for the owner to add to the
+      governed accept files (`osv-scanner.toml` with an expiry date, `.semgrepignore`), and
+      the item is set Blocked for those lines only.
+   4. `factory-check` and the gate pass on the merged `dev`.
+   5. Tester's guide: how to see that the site still works (dev preview, login, main pages).
+   EOF
+   ```
+
+   `--once` comments on the open item instead when it exists already.
+2. Comment `Waiting for <BASELINE-ID>` on the waiting item; it stays In Progress.
+3. Dispatch the baseline item first and alone; when it is In Review, resume the waiting
+   items in their workspaces (their branches merge `origin/dev` and pass now).
 
 ## Never
 

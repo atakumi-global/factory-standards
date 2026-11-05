@@ -34,6 +34,15 @@ The brief in your task names the item, the scope and the branch.
    (lockfile in `git diff HEAD...origin/dev --stat`), put the install first in the gate,
    for example `--gate "npm ci && npm run lint && ..."`. If `dev` moved meanwhile it tells you; re-run it. Fix
    failures; never skip the gates or `factory-check`.
+   **Findings that are already on `dev`** (a vulnerable dependency you did not add, a code
+   scan finding in a file you did not change, a build that fails on `dev` too): they are
+   not yours to fix inside this item and not a reason to set it Blocked. Check that they
+   are on `origin/dev` as well (run the failing check on a clean checkout of `origin/dev`,
+   or show that the files and lockfile entries are unchanged by your branch). Then commit
+   and push your branch, comment on the item `Waiting for the dev baseline:` followed by
+   the exact findings (check, file and line or package, severity, advisory), leave the
+   item **In Progress**, and report to the lead: done, outcome failed, reason `baseline`,
+   with the same list. The lead turns it into one urgent item; your work merges after it.
 6. **Evidence in Plane.** `plane comment <ITEM-ID>` with: branch, merge commit, gate
    command and result, `factory-check` result, security checklist outcome from
    `AGENTS.md`, and anything left for a human (follow-ups, risks, things you could not

@@ -5,6 +5,11 @@ one, PATCH clarifies.
 
 ## Unreleased
 
+- Dev baseline (standard procedure): findings already on `dev` that make `factory-check`
+  or the gate fail are fixed by the factory first, as one urgent item "Dev fails
+  factory-check" created by the lead; the worker that found them leaves its item In
+  Progress, waiting for it, instead of setting it Blocked for the owner.
+
 - Tester's guides name a working login (account, role, and the password or where it is
   written down for that environment), so anyone can test without asking; the lead checks
   it (`agents/worker.md`, `agents/lead.md`, `agents/AGENTS.shared.md`).
