@@ -5,6 +5,11 @@ one, PATCH clarifies.
 
 ## Unreleased
 
+- Lead: during a run it reads the Todo queue again after every delivery, so items that
+  arrive while it runs (sent back by a tester, for example) join the run; items sent back
+  by a tester go before every non-urgent item; it finishes only on a fresh empty queue. The
+  scheduled automation checks every 2 minutes (`agents/lead.md`).
+
 - Dev baseline (standard procedure): findings already on `dev` that make `factory-check`
   or the gate fail are fixed by the factory first, as one urgent item "Dev fails
   factory-check" created by the lead; the worker that found them leaves its item In

@@ -41,14 +41,17 @@ person's item that is not done, set the factory item Blocked with that reason.
    minutes (`orca terminal list --json`, `lastOutputAt`); leave those items alone, they
    belong to another run.
 
-   You may have been woken by the scheduled automation (`/lead`, every 15 minutes, only
-   when Todo has items and no agent is busy). Then nobody is watching: do not wait for
+   You may have been woken by the scheduled automation (`/lead`, checked every 2 minutes,
+   started only when Todo has items and no agent is busy). Then nobody is watching: do not wait for
    answers, decide or set Blocked as below.
 2. **Read every Todo item** with `plane get <ID>`: description, acceptance criteria,
    parent, sub-items, comments.
 3. **Plan.** Decide per item; you are the one who decides, nobody will confirm:
    - **Order**: urgent, high, medium, low, none; within a priority, the order `plane list`
      gives. Sub-items an item depends on go first.
+   - **Sent back first**: a Todo item that already has a workspace (step 1) was sent back
+     by a tester, who is waiting for it to continue testing. It goes before every
+     non-urgent item, whatever its own priority.
    - **"Dev preview does not start"** (urgent, created by the factory's preview watchdog):
      `dev` itself is broken, so it goes first and nothing that touches the same area runs
      beside it. It is this project's code, not factory infrastructure: dispatch it.
@@ -77,7 +80,11 @@ person's item that is not done, set the factory item Blocked with that reason.
      name, based on `origin/dev`, with the repository's setup run; or in the item's
      existing workspace (step 1).
 6. **Follow up.** Wait for deliveries (worker done, question, escalation) and acknowledge
-   each one.
+   each one. After each delivery, read the queue again (`plane list`, and `orca worktree
+   list --json` for workspaces): items that arrived during the run, above all items sent
+   back by a tester, join this run's plan (step 3) and are dispatched when a worker slot is
+   free. The automation does not start a second lead while you run, so you are the only
+   one who will see them until you stop.
    - **Done, succeeded**: check with `plane get` that the item is In Review and has an
      evidence comment and a tester's guide ("How to test" with Where, Before you start,
      Steps, Expected) that a non-developer can follow without asking: real URLs, menu
@@ -94,7 +101,7 @@ person's item that is not done, set the factory item Blocked with that reason.
      Otherwise tell the worker to set the item Blocked with the question, and go on.
    - **No heartbeat for 3 intervals**: read the worker's terminal; if it is stuck, stop
      it, set the item Blocked with what you saw, go on.
-7. **Finish** when Todo is empty and no worker is running:
+7. **Finish** when a fresh `plane list` shows Todo empty and no worker is running:
    - release every worker of this run that you have not released yet
      (`orca orchestration worker-release`), also the ones that failed;
    - run `factory-cleanup --apply`: it removes the workspaces whose branch is merged into
