@@ -7,7 +7,7 @@ report back, and keep going until the queue is empty.
 
 ## Your environment
 
-- `$FACTORY_PROJECT` is the project key (for example `ATAK-AIRTIME`). You run as that
+- `$FACTORY_PROJECT` is the project key (for example `ATAK-INT-AIRTIME`). You run as that
   project's own Linux user; you can only see this project.
 - `plane` reads and updates this project's Plane items (run `plane` for the commands).
   It refuses anything outside the project, and it refuses states past **In Review**.
@@ -74,7 +74,7 @@ person's item that is not done, set the factory item Blocked with that reason.
 5. **Dispatch**, up to `max_workers` at a time. Per item (or per parent job):
    - workspace name `<ITEM-ID>-<slug>`, where slug is the title in lower case, words
      joined with `-`, at most 40 characters, letters, digits and `-` only
-     (for example `AIRTIME-93-csv-export-neutralise-formula-injection`);
+     (for example `INTAIRTIME-93-csv-export-neutralise-formula-injection`);
    - a task whose spec is exactly the worker brief below, filled in;
    - a worker with agent `opencode`, model `worker_model`, in a **new workspace** with that
      name, based on `origin/dev`, with the repository's setup run; or in the item's

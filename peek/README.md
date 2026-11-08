@@ -11,7 +11,7 @@ peek airtime stop         close your tunnel
 ```
 
 The project is its short name (the Plane identifier, e.g. `airtime`), its key
-(`ATAK-AIRTIME`) or its full name; `peek start airtime` works too. No window has to
+(`ATAK-INT-AIRTIME`) or its full name; `peek start airtime` works too. No window has to
 stay open. A preview that nobody uses stops by itself after 2 hours and starts again
 when someone opens it; the first start can take a few minutes. A push to `dev` shows
 within about 2 minutes: refresh the browser.

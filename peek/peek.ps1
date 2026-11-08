@@ -8,7 +8,7 @@
 #   peek airtime status    the preview's state on the server and your tunnel
 #   peek status            all previews you have access to
 #
-# The project is its Plane identifier (AIRTIME), its key (ATAK-AIRTIME) or its name, in
+# The project is its Plane identifier (INTAIRTIME), its key (ATAK-INT-AIRTIME) or its name, in
 # any case; "peek start airtime" works too. No window stays open: the tunnel is a
 # hidden ssh process. Connects to the SSH host "factory-peek" (written by
 # peek-setup.ps1 into ~/.ssh/config); you need your WireGuard connection on.
