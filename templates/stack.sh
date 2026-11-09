@@ -26,6 +26,13 @@ STATE_DIR=".stack/${INSTANCE}"
 # secret scan never sees them and they can never be committed.
 SECRETS_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/stack/${COMPOSE_PROJECT}.env"
 URL="http://127.0.0.1:${APP_PORT}${HEALTH_PATH}"
+# The factory dev login (STACK.md 8): <role>@factory.test, one password everywhere.
+if [ -z "${FACTORY_DEV_PASSWORD:-}" ] && [ -f "$HOME/.factory/dev-login.env" ]; then
+  # shellcheck disable=SC1091
+  . "$HOME/.factory/dev-login.env"
+fi
+export FACTORY_DEV_PASSWORD="${FACTORY_DEV_PASSWORD:-}"
+export FACTORY_DATA_DIR="${FACTORY_DATA_DIR:-}"   # read-only project data on the agent server (STACK.md 9)
 
 # ---------------------------------------------------------------- PROJECT hooks
 # Development secrets: generated once into $SECRETS_FILE (outside the repository),
@@ -37,8 +44,10 @@ EOF
 }
 
 # Install dependencies, run migrations, load seed data. Must be idempotent.
+# The seed creates admin@factory.test (and the project's other roles) with
+# $FACTORY_DEV_PASSWORD, and may load content from $FACTORY_DATA_DIR (STACK.md 8, 9).
 prepare() {
-  : # e.g. npm ci --no-audit --no-fund
+  : # e.g. npm ci --no-audit --no-fund && npm run seed
 }
 
 # Extra environment for the app process (the dev secrets are already exported).

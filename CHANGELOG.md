@@ -5,6 +5,13 @@ one, PATCH clarifies.
 
 ## Unreleased
 
+- Dev logins and seed data (STACK.md 8, 9): every instance seeds `<role>@factory.test` with
+  the one factory dev password (`FACTORY_DEV_PASSWORD`, from Vaultwarden through
+  setup-project), at least `admin`; tester's guides name that login and the Vaultwarden
+  item, never the password. Seeds are realistic and built from the project's read-only
+  data on the agent server (`/srv/factory-data/<PROJECT KEY>`), with real accounts
+  replaced and personal data removed.
+
 - Lead: during a run it reads the Todo queue again after every delivery, so items that
   arrive while it runs (sent back by a tester, for example) join the run; items sent back
   by a tester go before every non-urgent item; it finishes only on a fresh empty queue. The

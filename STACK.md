@@ -55,6 +55,22 @@ Rules:
    Checks stay cheap (well under a second); the preview watchdog calls it every two
    minutes.
 7. **No interactive prompts**, so the preview service can run it unattended.
+8. **One dev login per role, the same everywhere** (owner, 2026-11-09: "the login of anything
+   in dev should always be the same"). Every instance seeds, for each role the project has,
+   the account `<role>@factory.test` with the factory dev password from
+   `FACTORY_DEV_PASSWORD`. Every project has at least `admin@factory.test`; a project adds
+   its own roles (`editor@factory.test`, `client@factory.test`) with the same password and
+   lists them in its README under "Dev logins". On the agent server the password comes
+   from `~/.factory/dev-login.env`, which setup-project writes from the Vaultwarden item
+   `factory/dev-login` (collection "Dev logins", readable by the team); on the laptop the
+   owner sets `FACTORY_DEV_PASSWORD` or the script falls back to that file. It is a dev
+   password: never used for stage or production, which have their own accounts.
+9. **Seed data is realistic and the same for everyone.** `prepare` loads a seed so every
+   instance starts with the same content. A project's non-committed data (a snapshot of a
+   database or uploaded media) lives on the agent server in `/srv/factory-data/<PROJECT
+   KEY>` (`$FACTORY_DATA_DIR`), read-only for that project's agent user and closed to
+   every other project; never secrets. The seed is built from it with the real accounts
+   replaced by the dev logins of rule 8 and personal data removed.
 
 ## Where it runs
 
