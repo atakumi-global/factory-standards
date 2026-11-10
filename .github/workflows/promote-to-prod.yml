@@ -1,0 +1,23 @@
+# Copy to <repo>/.github/workflows/promote-to-prod.yml
+# Only a repository admin (the owner) may start it. In a public repository the "prod"
+# environment also has the owner as required reviewer; a private repository on GitHub
+# Free, Pro or Team cannot have that rule, and the admin check is the gate.
+name: Promote to prod
+
+on:
+  workflow_dispatch:
+
+jobs:
+  promote:
+    uses: atakumi-global/factory-ci/.github/workflows/promote.yml@v1
+    with:
+      source: stage
+      target: prod            # "main" in repositories whose production branch is main
+      environment: prod
+    secrets:
+      deploy_key: ${{ secrets.PROMOTE_DEPLOY_KEY }}   # repository secret (public repos); a private repo's
+                                                      # environment secret reaches promote.yml by itself
+    permissions:
+      contents: write
+      checks: read
+      statuses: read
