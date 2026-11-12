@@ -43,8 +43,10 @@
   Approved → Deployed to stage → Approved by client → In production → Done /
   Cancelled. Set **In Progress** before changing anything; set **Blocked** and
   reassign the owner when waiting on a human.
-- **People's items are off limits.** Agents work only on items assigned to the agent
-  account; an item assigned to a person (or to nobody) is read-only for agents.
+- **People's items are off limits, except comments.** Agents work only on items assigned
+  to the agent account; an item assigned to a person (or to nobody) stays read-only,
+  except that the broker allows a comment once it is **In Progress** or later. Moving it,
+  reassigning it or changing its fields still needs its owner.
 - **The agent never approves.** Never move an item past **In Review** without a
   recorded human approval. **The item's state is the record:** a human approves by
   moving it from **In Review** to **Approved** (or any later state). Labels and
