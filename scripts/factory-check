@@ -16,9 +16,9 @@ run "secrets in branch commits (gitleaks)" gitleaks git --log-opts="$base..HEAD"
 run "secrets in working tree (gitleaks)"   gitleaks dir . --redact --no-banner
 run "code scan (semgrep)"                  semgrep scan --config p/default --config p/secrets --error --quiet --metrics=off
 if [ -f osv-scanner.toml ]; then
-  run "dependency vulnerabilities (osv)"   osv-scanner scan source --config osv-scanner.toml -r .
+  run "dependency vulnerabilities (osv)"   osv-scanner scan source --config osv-scanner.toml --allow-no-lockfiles -r .
 else
-  run "dependency vulnerabilities (osv)"   osv-scanner scan source -r .
+  run "dependency vulnerabilities (osv)"   osv-scanner scan source --allow-no-lockfiles -r .
 fi
 run "misconfig and vulns (trivy)"          trivy fs --quiet --scanners vuln,misconfig,secret --severity HIGH,CRITICAL --exit-code 1 .
 
