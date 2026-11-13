@@ -3,7 +3,7 @@
 Versions follow semantic versioning: MAJOR removes or redefines a rule, MINOR adds
 one, PATCH clarifies.
 
-## Unreleased
+## 1.1.0 - 2026-11-14
 
 - Shared board: agents may comment on a person's item once it is In Progress or later
   (the broker allows it); moving it, reassigning it or changing its fields still needs
