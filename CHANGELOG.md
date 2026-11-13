@@ -5,6 +5,10 @@ one, PATCH clarifies.
 
 ## Unreleased
 
+- Shared board: agents may comment on a person's item once it is In Progress or later
+  (the broker allows it); moving it, reassigning it or changing its fields still needs
+  its owner (`agents/AGENTS.shared.md`).
+
 - Dev logins and seed data (STACK.md 8, 9): every instance seeds `<role>@factory.test` with
   the one factory dev password (`FACTORY_DEV_PASSWORD`, from Vaultwarden through
   setup-project), at least `admin`; tester's guides name that login and the Vaultwarden
