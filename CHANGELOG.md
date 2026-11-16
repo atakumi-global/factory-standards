@@ -3,6 +3,19 @@
 Versions follow semantic versioning: MAJOR removes or redefines a rule, MINOR adds
 one, PATCH clarifies.
 
+## 1.2.0 - 2026-11-16
+
+- End-of-run reports are two layers and terse: an **Activity log** (short bullets: what,
+  where, result; no module-by-module detail and no restating the diff) and a **Manager
+  summary** (plain language and short: what happened, decisions, blockers, what a human
+  must do). Gate and `factory-check` evidence is one line on a pass
+  (`### factory-check — pass`, scanners listed only when one fails), a human action names
+  the action only (`* **Coolify redeploy after merge.**`) or, when it needs a code sample,
+  where to run it, and repo state lists only repositories touched and leftovers
+  (`Repo state: none changed.` when none; never temp files, tool artifacts or API
+  payloads). Exact detail stays for failures, blockers and security findings
+  (`agents/AGENTS.shared.md`, `agents/worker.md`, `agents/lead.md`).
+
 ## 1.1.0 - 2026-11-14
 
 - Shared board: agents may comment on a person's item once it is In Progress or later

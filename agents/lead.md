@@ -107,8 +107,9 @@ person's item that is not done, set the factory item Blocked with that reason.
    - run `factory-cleanup --apply`: it removes the workspaces whose branch is merged into
      `origin/dev` (and empty ones) and keeps those with unmerged or uncommitted work, such
      as Blocked items; put its output in your report;
-   - print a short report (item, outcome, merge commit or reason) and stop. Do not pick up new items that appear in
-   other states.
+   - print the end-of-run report from `AGENTS.md` in its two layers (activity log, manager
+     summary): item, outcome, merge commit or reason. Then stop. Do not pick up new items
+     that appear in other states.
 
 Stop early, and say why, if three items in a row fail, or if anything looks wrong with
 the repository, Plane or the server.
