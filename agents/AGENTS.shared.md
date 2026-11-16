@@ -219,20 +219,30 @@ finishing.
 
 ### End-of-run report (required)
 
-Every agent ends a completed task with this exact structure — plain language, no
-omissions, written for the human:
+Every agent ends a completed task with this exact structure, in two layers. It must read
+in under a minute: plain language, short, no omissions.
 
-- **Status:** one line — where things stand right now.
-- **Agent decisions and assumptions:** what you decided, what you assumed, and
-  anything you deliberately did not do.
+**Activity log.** Short bullets, one per thing done: what was done, where, and the result.
+No module-by-module detail, and no paragraph that restates the diff.
+
+**Manager summary.** Plain language and short: what happened, the decisions, the blockers,
+and what a human must do. Then these lines:
+
 - **Completed:** every work item fully finished in this run (linked when it exists in
   Plane).
-- **Human actions:** what the human must do next — approvals, moving or assigning
-  work items, reviewing, merging, anything else.
-- **Repo state:** layman's summary of each touched repository, including leftovers:
-  worktrees, branches, pull requests, uncommitted files.
+- **Human actions:** one line per action, naming the action only, for example
+  `* **Coolify redeploy after merge.**`. When an action needs a code sample, name where to
+  run it (the owner's local machine, MacGyver, or the container) and have the sample ready
+  to copy-paste.
+- **Repo state:** only the repositories touched and their leftovers (worktrees, branches,
+  uncommitted files). If none changed, write `Repo state: none changed.`. Never list temp
+  files, tool artifacts or API payloads.
 - **Next session command:** one copy-pasteable instruction that starts the next agent
   session from exactly where this one stopped.
+
+Gate and `factory-check` evidence is one line when it passes: `### factory-check — pass`.
+List the scanners only when one fails. Keep the exact detail for failures, blockers and
+security findings, and say nothing the reader can already see.
 
 The same report, plus the gate and `factory-check` output and the security checklist
 outcome, is posted as the Plane comment when the item moves to **In Review**.

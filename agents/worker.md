@@ -43,10 +43,13 @@ The brief in your task names the item, the scope and the branch.
    the exact findings (check, file and line or package, severity, advisory), leave the
    item **In Progress**, and report to the lead: done, outcome failed, reason `baseline`,
    with the same list. The lead turns it into one urgent item; your work merges after it.
-6. **Evidence in Plane.** `plane comment <ITEM-ID>` with: branch, merge commit, gate
-   command and result, `factory-check` result, security checklist outcome from
-   `AGENTS.md`, and anything left for a human (follow-ups, risks, things you could not
-   verify).
+6. **Evidence in Plane.** `plane comment <ITEM-ID>` with the end-of-run report from
+   `AGENTS.md`: the **Activity log** (short bullets: what, where, result), then the
+   **Manager summary** with the branch and merge commit, the security checklist outcome,
+   and anything left for a human (follow-ups, risks, things you could not verify). Gate
+   and `factory-check` evidence is one line when it passes:
+   `### factory-check — pass`; list the scanners only when one fails. Keep the exact
+   detail for a failure, a blocker or a security finding.
 7. **Tester's guide in Plane.** A second comment, written for a person who did not see
    your work and is not a developer, so that it is impossible to miss what to do. Use
    exactly these headings (the broker refuses In Review without them):
@@ -76,8 +79,9 @@ The brief in your task names the item, the scope and the branch.
    gap in your evidence comment. If an item has nothing a person can see (a refactor, a test-only
    change), say so under Where and give the command that shows the result instead.
 8. **Hand over.** `plane state <ITEM-ID> "In Review"` (this assigns the owner).
-9. **Report** to the lead: done, outcome succeeded, with the merge commit and one line
-   per acceptance criterion.
+9. **Report** to the lead: done, outcome succeeded, in the two layers from `AGENTS.md`
+   (activity log, manager summary), with the merge commit and one line per acceptance
+   criterion.
 
 ## Servers, databases and ports
 
@@ -103,8 +107,8 @@ data it had.
 
 - A decision only a human can make, missing access, contradictory requirements, or a
   failure you cannot fix without leaving the item's scope: comment the exact question or
-  error on the item, `plane state <ITEM-ID> Blocked`, and report done, outcome failed,
-  with the same text.
+  error on the item, `plane state <ITEM-ID> Blocked`, and report done, outcome failed, in
+  the two layers from `AGENTS.md` with the exact question or error as the blocker.
 - A question the item or its parent might answer: ask the lead first.
 
 ## Never
