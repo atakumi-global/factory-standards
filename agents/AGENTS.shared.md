@@ -217,6 +217,9 @@ finishing.
 ### Communication
 
 - Be concise and specific; quote exact commands, identifiers and states.
+- **Every action you describe names three things:** the machine or system it runs on
+  (the owner's laptop, MacGyver, the GitHub web UI), the full path or full URL, and the
+  exact command or clicks. A step without all three is incomplete.
 - Report failures honestly, with the response body or error, instead of retrying
   past an unexpected result.
 - No emojis.

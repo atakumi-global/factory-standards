@@ -3,6 +3,12 @@
 Versions follow semantic versioning: MAJOR removes or redefines a rule, MINOR adds
 one, PATCH clarifies.
 
+## 2.2.0 - 2026-11-18
+
+- Every action an agent describes names the machine or system, the full path or full URL,
+  and the exact command or clicks (owner, 2026-11-18). A step without all three is
+  incomplete (`agents/AGENTS.shared.md`, Communication).
+
 ## 2.1.0 - 2026-11-18
 
 - A Blocked item comes back by itself when the owner answers (owner, 2026-11-18). The
