@@ -42,7 +42,10 @@
 - **Lifecycle:** Backlog → Prepare → Todo → In Progress → Blocked → In Review →
   Approved → Deployed to stage → Approved by client → In production → Done /
   Cancelled. Set **In Progress** before changing anything; set **Blocked** and
-  reassign the owner when waiting on a human.
+  reassign the owner only when a human must answer or act. **A dependency on another
+  item is never Blocked:** write `Depends on: <ITEM-ID>` in the description (or comment
+  it) and leave the item in Todo. The broker refuses to start it until every dependency
+  is Approved or later, and the next scheduled run picks it up by itself.
 - **People's items are off limits, except comments.** Agents work only on items assigned
   to the agent account; an item assigned to a person (or to nobody) stays read-only,
   except that the broker allows a comment once it is **In Progress** or later. Moving it,
