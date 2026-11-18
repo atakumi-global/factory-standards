@@ -3,6 +3,20 @@
 Versions follow semantic versioning: MAJOR removes or redefines a rule, MINOR adds
 one, PATCH clarifies.
 
+## 3.0.0 - 2026-11-18
+
+- The standard is delivered by the agent runtime, not copied into repositories (owner,
+  2026-11-18). `/opt/factory/standards/agents/AGENTS.shared.md` is loaded as opencode's
+  global rules through a symlink the `opencode` wrapper creates at
+  `~/.config/opencode/AGENTS.md`; the owner's laptop loads `ALL_AGENTS.md` the same way.
+  A repository's `AGENTS.md` adds project specifics only. A section between
+  `factory-standards:begin` and `factory-standards:end` is an old snapshot: it is
+  ignored, and `scripts/sync_agents_md.py` deletes it. A standard release now needs one
+  install on the agent server and no commit in any repository, so the per-repository
+  sync and its version drift check are gone (`agents/AGENTS.shared.md`, `README.md`,
+  `scripts/sync_agents_md.py`, `templates/AGENTS.md`, `factory-ci` standard-drift,
+  `factory-ops` setup-project and install-factory-shared.sh).
+
 ## 2.2.0 - 2026-11-18
 
 - Every action an agent describes names the machine or system, the full path or full URL,

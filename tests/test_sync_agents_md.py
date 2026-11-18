@@ -4,44 +4,37 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from sync_agents_md import END, sync  # noqa: E402
-
-SHARED = "## Factory standard (shared)\n\nRule one.\n"
+from sync_agents_md import END, has_block, remove  # noqa: E402
 
 
-def test_inserts_after_title_and_intro_keeping_project_content():
-    src = "# AGENTS.md — X\n\n> Intro line\n> more\n\n## What this is\n\nProject text.\n"
-    out = sync(src, SHARED, "0.1.0")
-    assert out.index("> more") < out.index("factory-standards:begin v0.1.0")
-    assert out.index(END) < out.index("## What this is")
-    assert "Project text." in out
+def test_removes_the_block_and_keeps_project_content():
+    src = ("# AGENTS.md — X\n\n> Intro\n\n<!-- factory-standards:begin v2.0.0 -->\n"
+           "## Factory standard\n\nRule one.\n" f"{END}\n\n## What this is\n\nProject text.\n")
+    out = remove(src)
+    assert "Rule one." not in out and "factory-standards:begin" not in out
+    assert "> Intro" in out and "Project text." in out
+    assert out.index("> Intro") < out.index("## What this is")
 
 
-def test_replaces_existing_block_only():
-    src = sync("# T\n\n## Project\n\nmine\n", SHARED, "0.1.0")
-    out = sync(src, "## Factory standard (shared)\n\nRule two.\n", "0.2.0")
-    assert "Rule two." in out and "Rule one." not in out
-    assert "begin v0.2.0" in out and out.count(END) == 1
-    assert out.endswith("mine\n")
+def test_removes_a_placeholder_block_from_the_old_template():
+    src = ("# T\n\n<!-- factory-standards:begin -->\n<!-- placeholder -->\n"
+           f"{END}\n\n## Project\n")
+    out = remove(src)
+    assert "placeholder" not in out and "## Project" in out
 
 
 def test_idempotent():
-    once = sync("# T\n\nbody\n", SHARED, "0.1.0")
-    assert sync(once, SHARED, "0.1.0") == once
-
-
-def test_template_placeholder_markers_are_replaced():
-    src = ("# T\n\n<!-- factory-standards:begin -->\n<!-- placeholder -->\n"
-           f"{END}\n\n## Project\n")
-    out = sync(src, SHARED, "0.1.0")
-    assert "placeholder" not in out and "Rule one." in out
+    src = "# T\n\n<!-- factory-standards:begin v0.1.0 -->\nx\n" f"{END}\n\nbody\n"
+    once = remove(src)
+    assert remove(once) == once
+    assert not has_block(once)
 
 
 def test_unterminated_block_is_an_error():
     with pytest.raises(ValueError):
-        sync("# T\n<!-- factory-standards:begin v0.1.0 -->\nno end\n", SHARED, "0.1.0")
+        remove("# T\n<!-- factory-standards:begin v0.1.0 -->\nno end\n")
 
 
-def test_no_title_inserts_at_top():
-    out = sync("Some text\n", SHARED, "0.1.0")
-    assert out.startswith("<!-- factory-standards:begin")
+def test_file_without_a_block_is_unchanged():
+    src = "# T\n\n## Project\n\nmine\n"
+    assert remove(src) == src
