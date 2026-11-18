@@ -3,6 +3,16 @@
 Versions follow semantic versioning: MAJOR removes or redefines a rule, MINOR adds
 one, PATCH clarifies.
 
+## 3.1.0 - 2026-11-19
+
+- Public sites behind Bunny CDN follow one hosting standard: an HTTPS origin with its
+  own `origin-<environment>` hostname, Forward Host Header, both hostnames on the
+  Coolify app, Vary Cache by URL Query String, and the edge rule "No cache for admin,
+  API and logged in" (Override Cache Time 0; `*/admin*`, `*/api/*`, cookie
+  `payload-token` and `__prerender_bypass`). No `Critical-CH` header. New rule in
+  `HOSTING.md`; each project records its own values in `docs/infrastructure.md`,
+  scaffolded from `templates/docs/infrastructure.md` (INTFACTORY-42).
+
 ## 3.0.0 - 2026-11-18
 
 - The standard is delivered by the agent runtime, not copied into repositories (owner,

@@ -16,6 +16,7 @@ per-repository exceptions) lives in `atakumi-global/factory-ops`.
 | `agents/AGENTS.shared.md` | Universal agent rules, installed with the runtime and loaded into every session; never copied into a repository |
 | `WORKFLOW.md` | Canonical branch and finish sequence (no PRs; gate and `factory-check` before `dev`) |
 | `STACK.md` | The `./stack.sh` contract every project implements (local stack and dev preview) |
+| `HOSTING.md` | The public site hosting standard behind Bunny CDN: https origin, Forward Host Header, query-string caching and the no-cache rule for admin, API and logged-in users |
 | `templates/` | The golden set copied into each project: `AGENTS.md`, `CONSTITUTION.md`, `HANDOVER.md`, `plane.json` (→ `.plane.json`), `gitignore` (→ `.gitignore`), `CODEOWNERS`, `stack.sh`, `docs/`, `project/`, `design-system/DESIGN.md`, `prototypes/` |
 | `kb/` | Knowledge-base convention and the template for `kb-<company>-<project>` repositories |
 | `scripts/sync_agents_md.py` | Deletes an old copied standard section from a repository's `AGENTS.md` |
