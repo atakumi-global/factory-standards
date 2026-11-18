@@ -3,6 +3,15 @@
 Versions follow semantic versioning: MAJOR removes or redefines a rule, MINOR adds
 one, PATCH clarifies.
 
+## 2.0.0 - 2026-11-18
+
+- A dependency is no longer the Blocked state (owner, 2026-11-18). An item whose
+  description or a comment says `Depends on: <ITEM-ID>` stays in Todo until every
+  dependency is Approved or later; the broker refuses to set it In Progress before that,
+  and the next scheduled run picks it up by itself, so the owner approves once instead of
+  moving the item back from Blocked. Blocked is now only for a human's answer or action
+  (`agents/AGENTS.shared.md`, `agents/lead.md`, `agents/worker.md`).
+
 ## 1.2.0 - 2026-11-16
 
 - End-of-run reports are two layers and terse: an **Activity log** (short bullets: what,

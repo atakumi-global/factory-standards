@@ -105,6 +105,8 @@ data it had.
 
 ## When you cannot finish
 
+- A dependency on an item that is not Approved yet: comment `Depends on: <ITEM-ID>` and
+  report it as the blocker; do not start or continue that part.
 - A decision only a human can make, missing access, contradictory requirements, or a
   failure you cannot fix without leaving the item's scope: comment the exact question or
   error on the item, `plane state <ITEM-ID> Blocked`, and report done, outcome failed, in

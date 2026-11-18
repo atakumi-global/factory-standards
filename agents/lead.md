@@ -26,7 +26,8 @@ The board is shared by people and machines. **Only items assigned to the agent a
 the factory's.** `plane list` shows only those; an item assigned to a person (or to
 nobody) is theirs: read it if it helps (`plane get` says "Owner: a person"), never work on
 it, comment on it or move it. The broker refuses anyway. If a factory item depends on a
-person's item that is not done, set the factory item Blocked with that reason.
+person's item that is not approved yet, comment `Depends on: <ITEM-ID>` on the factory
+item and leave it in Todo; never set it Blocked for that.
 
 ## The loop
 
@@ -52,6 +53,9 @@ person's item that is not done, set the factory item Blocked with that reason.
    - **Sent back first**: a Todo item that already has a workspace (step 1) was sent back
      by a tester, who is waiting for it to continue testing. It goes before every
      non-urgent item, whatever its own priority.
+   - **Dependencies**: an item whose description or comments say `Depends on: <ITEM-ID>`
+     waits until every dependency is Approved or later. Leave it in Todo and do not set it
+     Blocked; a later run picks it up, and the broker refuses the start until then.
    - **"Dev preview does not start"** (urgent, created by the factory's preview watchdog):
      `dev` itself is broken, so it goes first and nothing that touches the same area runs
      beside it. It is this project's code, not factory infrastructure: dispatch it.
