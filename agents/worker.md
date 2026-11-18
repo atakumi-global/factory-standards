@@ -39,20 +39,13 @@ The brief in your task names the item, the scope and the branch.
    not yours to fix inside this item and not a reason to set it Blocked. Check that they
    are on `origin/dev` as well (run the failing check on a clean checkout of `origin/dev`,
    or show that the files and lockfile entries are unchanged by your branch). Then commit
-   and push your branch, comment on the item `Waiting for the dev baseline:` followed by
-   the exact findings (check, file and line or package, severity, advisory), leave the
-   item **In Progress**, and report to the lead: done, outcome failed, reason `baseline`,
-   with the same list. The lead turns it into one urgent item; your work merges after it.
-6. **Evidence in Plane.** `plane comment <ITEM-ID>` with the end-of-run report from
-   `AGENTS.md`: the **Activity log** (short bullets: what, where, result), then the
-   **Manager summary** with the branch and merge commit, the security checklist outcome,
-   and anything left for a human (follow-ups, risks, things you could not verify). Gate
-   and `factory-check` evidence is one line when it passes:
-   `### factory-check — pass`; list the scanners only when one fails. Keep the exact
-   detail for a failure, a blocker or a security finding.
-7. **Tester's guide in Plane.** A second comment, written for a person who did not see
-   your work and is not a developer, so that it is impossible to miss what to do. Use
-   exactly these headings (the broker refuses In Review without them):
+   and push your branch, write the exact findings (check, file and line or package,
+   severity, advisory) in the evidence file, comment the short handback with its link,
+   leave the item **In Progress**, and report to the lead: done, outcome failed, reason
+   `baseline`. The lead turns it into one urgent item; your work merges after it.
+6. **Tester's guide in Plane first.** A comment written for a person who did not see your
+   work and is not a developer, so that it is impossible to miss what to do. Use exactly
+   these headings (the broker refuses In Review without them):
 
    ```
    ## How to test
@@ -76,12 +69,28 @@ The brief in your task names the item, the scope and the branch.
    Concrete names only: real menu labels, button texts, URLs and sample values, never
    "verify it works". A guide without a working login is not finished: if the project
    does not seed the factory dev login yet, say so under Before you start and name it as a
-   gap in your evidence comment. If an item has nothing a person can see (a refactor, a test-only
-   change), say so under Where and give the command that shows the result instead.
-8. **Hand over.** `plane state <ITEM-ID> "In Review"` (this assigns the owner).
-9. **Report** to the lead: done, outcome succeeded, in the two layers from `AGENTS.md`
-   (activity log, manager summary), with the merge commit and one line per acceptance
-   criterion.
+   gap in your evidence file. If an item has nothing a person can see (a refactor, a
+   test-only change), say so under Where and give the command that shows the result
+   instead. The guide stays in the work item and carries no evidence link.
+7. **Evidence in the knowledge base.** Write the end-of-run report from `AGENTS.md` to
+   `log/YYYY-MM-DD-<ITEM-ID>.md` in the project's knowledge base: the **Activity log**
+   (short bullets: what, where, result), then the **Manager summary** with the branch and
+   merge commit, the security checklist outcome, and anything left for a human
+   (follow-ups, risks, things you could not verify). It also holds the gate and
+   `factory-check` output with run ids, the pushed state, the changes made and any
+   findings. Gate and `factory-check` evidence is one line when it passes:
+   `### factory-check — pass`; list the scanners only when one fails. Keep the exact
+   detail for a failure, a blocker or a security finding. Commit and push the evidence
+   file before the handback; the tester's guide is not duplicated there.
+8. **Handback in Plane, last.** One short comment: outcome in one sentence, checks on one
+   line, the next step in one sentence (the single question when blocked), and one
+   absolute GitHub link to the evidence file under `log/`. At most 1500 characters. The
+   broker verifies that the link resolves and refuses the comment otherwise; In Review
+   requires this handback as the newest comment, in addition to the tester's guide.
+9. **Hand over.** `plane state <ITEM-ID> "In Review"` (this assigns the owner).
+10. **Report** to the lead: done, outcome succeeded, in the two layers from `AGENTS.md`
+    (activity log, manager summary), with the merge commit and one line per acceptance
+    criterion.
 
 ## Servers, databases and ports
 
@@ -105,14 +114,16 @@ data it had.
 
 ## When you cannot finish
 
-- A dependency on an item that is not Approved yet: comment `Depends on: <ITEM-ID>` and
-  report it as the blocker; do not start or continue that part.
+- A dependency on an item that is not Approved yet: write `Depends on: <ITEM-ID>` in the
+  description (or a short comment) and report it as the blocker; do not start or continue
+  that part. Leave the item in Todo.
 - A decision only a human can make, missing access, contradictory requirements, or a
-  failure you cannot fix without leaving the item's scope: comment the exact question or
-  error on the item, `plane state <ITEM-ID> Blocked`, and report done, outcome failed, in
-  the two layers from `AGENTS.md` with the exact question or error as the blocker. The
-  broker keeps the item assigned to you and the owner while it is Blocked; when the owner
-  answers, the next run resumes it, so do not ask for it to be moved back.
+  failure you cannot fix without leaving the item's scope: write the evidence file, then
+  comment the handback whose next step is the single question, `plane state <ITEM-ID>
+  Blocked`, and report done, outcome failed, in the two layers from `AGENTS.md` with the
+  exact question or error as the blocker. The broker requires that handback as the newest
+  comment. It keeps the item assigned to you and the owner while it is Blocked; when the
+  owner answers, the next run resumes it, so do not ask for it to be moved back.
 - A question the item or its parent might answer: ask the lead first.
 
 ## Never

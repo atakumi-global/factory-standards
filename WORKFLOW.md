@@ -49,12 +49,16 @@ git push origin dev                     # 4. publish dev
 6. In GitHub: promote `dev` → stage (manual), then stage → production (manual,
    approved in the `prod` environment). Promotion is never done locally and
    never by an agent.
-7. Record it in Plane: comment the branch, merge commit, gate and `factory-check`
-   evidence, security checklist outcome and pushed state; add the **tester's guide**
-   (`## How to test` with Where, Before you start, numbered Steps, Expected, Not covered:
-   where to go, what to do and what to see, so obvious that a QA person needs no help);
-   move the item to **In Review** and assign the owner. Agents cannot set In Review
-   without the guide.
+7. Record it: write the evidence to `log/YYYY-MM-DD-<ITEM-ID>.md` in the project's
+   knowledge base and push it — the branch, merge commit, gate and `factory-check`
+   evidence with run ids, security checklist outcome, pushed state, changes and findings.
+   In Plane, add the **tester's guide** (`## How to test` with Where, Before you start,
+   numbered Steps, Expected, Not covered: where to go, what to do and what to see, so
+   obvious that a QA person needs no help), then the short **handback** comment with one
+   absolute GitHub link to that evidence file as its newest comment; move the item to
+   **In Review** and assign the owner. The broker refuses a handback whose link does not
+   resolve, and cannot set In Review without the guide and the newest-comment handback. The
+   evidence itself never travels in Plane.
 
 If `origin/dev` moves between step 2 and step 4: merge `dev` into the feature again,
 re-run the gates and `factory-check`, push again. Never force-push.
@@ -90,5 +94,6 @@ Common deviations, each recorded in the affected repository's `AGENTS.md`:
   server) `finish-work.sh` merges on a detached HEAD at `origin/dev` and pushes
   `HEAD:dev`; the result is the same merge commit on `dev`.
 - Agents with command support may wrap it (for example a `/finish-work` command): it
-  re-retrieves the Plane item, runs the script with the repository's gates, then
-  comments evidence and sets **In Review**.
+  re-retrieves the Plane item, runs the script with the repository's gates, then writes
+  the evidence file, comments the tester's guide and the handback, and sets **In
+  Review**.

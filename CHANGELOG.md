@@ -3,6 +3,20 @@
 Versions follow semantic versioning: MAJOR removes or redefines a rule, MINOR adds
 one, PATCH clarifies.
 
+## 3.2.0 - 2026-11-19
+
+- Evidence moves out of Plane and into the project's knowledge base (INTFACTORY-46). A
+  handback comment is outcome, one line of checks, one next step and one absolute GitHub
+  link to `log/YYYY-MM-DD-<ITEM-ID>.md` in the knowledge base; the broker verifies that
+  link with the GitHub token, refuses a handback whose link does not resolve or that has
+  more than one, and refuses a non-guide comment over 1500 characters. In Review and
+  Blocked require the handback as the newest comment; In Review also requires the tester's
+  guide, which stays in the work item and carries no link. The end-of-run report (both
+  layers, gate and `factory-check` with run ids, branch, merge commit, pushed state,
+  changes, security checklist, findings) is the evidence file; the tester's guide is not
+  duplicated there (`agents/AGENTS.shared.md`, `agents/worker.md`, `agents/lead.md`,
+  `WORKFLOW.md`). Separate work: park, semp and heal still need knowledge bases.
+
 ## 3.1.0 - 2026-11-19
 
 - Public sites behind Bunny CDN follow one hosting standard: an HTTPS origin with its
