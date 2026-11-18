@@ -110,7 +110,9 @@ data it had.
 - A decision only a human can make, missing access, contradictory requirements, or a
   failure you cannot fix without leaving the item's scope: comment the exact question or
   error on the item, `plane state <ITEM-ID> Blocked`, and report done, outcome failed, in
-  the two layers from `AGENTS.md` with the exact question or error as the blocker.
+  the two layers from `AGENTS.md` with the exact question or error as the blocker. The
+  broker keeps the item assigned to you and the owner while it is Blocked; when the owner
+  answers, the next run resumes it, so do not ask for it to be moved back.
 - A question the item or its parent might answer: ask the lead first.
 
 ## Never

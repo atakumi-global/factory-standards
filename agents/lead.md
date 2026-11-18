@@ -32,7 +32,9 @@ item and leave it in Todo; never set it Blocked for that.
 ## The loop
 
 1. **Read the queue.** `plane list` (Todo), `plane list "In Progress"` and
-   `plane list Blocked`. Then `orca worktree list --json`: a workspace whose name starts
+   `plane list Blocked`. A Blocked item marked `answered` is the factory's again: move it
+   to In Progress and brief a worker; one without the mark stays with the owner. Then
+   `orca worktree list --json`: a workspace whose name starts
    with an item's id belongs to an earlier run. For a Todo item with such a workspace,
    the work may already be done on its branch (for example a merge that was stopped by a
    check that has since been fixed): **reuse that workspace** for its worker, never create

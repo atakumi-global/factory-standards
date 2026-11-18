@@ -3,6 +3,14 @@
 Versions follow semantic versioning: MAJOR removes or redefines a rule, MINOR adds
 one, PATCH clarifies.
 
+## 2.1.0 - 2026-11-18
+
+- A Blocked item comes back by itself when the owner answers (owner, 2026-11-18). The
+  broker keeps the agent assigned and adds the owner, marks the item `answered` when the
+  newest comment is a person's, refuses In Progress until then, and reassigns it to the
+  agent when it resumes. The owner no longer moves answered items back to Todo
+  (`agents/AGENTS.shared.md`, `agents/lead.md`, `agents/worker.md`).
+
 ## 2.0.0 - 2026-11-18
 
 - A dependency is no longer the Blocked state (owner, 2026-11-18). An item whose
