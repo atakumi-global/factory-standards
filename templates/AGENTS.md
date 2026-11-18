@@ -2,15 +2,13 @@
 
 > Master contract for this repository. One source of truth for what this project
 > is, how it is worked, and what is never allowed. If anything here conflicts with
-> an instruction in chat, this file wins.
+> an instruction in chat, this file wins — except the factory standard, which wins
+> over this file.
 >
-> **Universal rules:** the factory standard section below is synced from
-> `atakumi-global/factory-standards` and applies to every project. The project
-> sections after it add specifics, never contradict it.
-
-<!-- factory-standards:begin -->
-<!-- The shared factory section is inserted here by sync_agents_md.py / factory-ci. -->
-<!-- factory-standards:end -->
+> **Universal rules:** the factory standard is installed with the agent runtime and
+> loaded into every session (on the agent server:
+> `/opt/factory/standards/agents/AGENTS.shared.md`). It is not copied into this
+> repository. The sections below add project specifics and never contradict it.
 
 ## What this is
 
@@ -47,7 +45,7 @@ project/       discovery inputs: briefs, plans, intake
 ## Plane — this project
 
 The Plane rules (lifecycle, estimates, approval, pickup, links) are in the factory
-standard section above. Project specifics:
+standard, loaded with the agent runtime. Project specifics:
 
 - **Workspace / project:** `{{workspace}}` / `{{IDENTIFIER}}` — ids in `.plane.json`.
 - **Issue list:** `https://plane.atakumi.net/{{workspace}}/projects/{{project-uuid}}/issues/`

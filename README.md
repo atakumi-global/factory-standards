@@ -13,12 +13,12 @@ per-repository exceptions) lives in `atakumi-global/factory-ops`.
 
 | Path | Purpose |
 | --- | --- |
-| `agents/AGENTS.shared.md` | Universal agent rules, synced into every repository's `AGENTS.md` |
+| `agents/AGENTS.shared.md` | Universal agent rules, installed with the runtime and loaded into every session; never copied into a repository |
 | `WORKFLOW.md` | Canonical branch and finish sequence (no PRs; gate and `factory-check` before `dev`) |
 | `STACK.md` | The `./stack.sh` contract every project implements (local stack and dev preview) |
 | `templates/` | The golden set copied into each project: `AGENTS.md`, `CONSTITUTION.md`, `HANDOVER.md`, `plane.json` (→ `.plane.json`), `gitignore` (→ `.gitignore`), `CODEOWNERS`, `stack.sh`, `docs/`, `project/`, `design-system/DESIGN.md`, `prototypes/` |
 | `kb/` | Knowledge-base convention and the template for `kb-<company>-<project>` repositories |
-| `scripts/sync_agents_md.py` | Inserts or refreshes the shared section between the markers |
+| `scripts/sync_agents_md.py` | Deletes an old copied standard section from a repository's `AGENTS.md` |
 | `scripts/factory-check` | The security scans CI runs, for use before finishing |
 | `scripts/finish-work.ps1` / `finish-work.sh` | The finish sequence, Windows and Linux/macOS |
 
@@ -48,24 +48,23 @@ Deployed to stage → Approved by client → In production → Done / Cancelled
 - Secrets are never committed. Leaked means rotated.
 - Every mention of a Plane work item carries its clickable link.
 
-## How a repository stays in sync
+## How the standard reaches an agent
 
-`AGENTS.md` contains the markers:
+The standard is installed with the agent runtime and loaded into every session:
 
-```
-<!-- factory-standards:begin vX.Y.Z -->
-...shared section...
-<!-- factory-standards:end -->
-```
+- **Agent server:** `/opt/factory/standards/agents/AGENTS.shared.md`, installed by
+  `factory-ops/tools/agent-host/install-factory-shared.sh` from `prod`. The `opencode`
+  wrapper points each project user's `~/.config/opencode/AGENTS.md` at it.
+- **Owner's laptop:** `C:\Users\mdver\Projects\ALL_AGENTS.md`, loaded globally.
 
-Everything outside the markers is the project's own content. A `factory-ci`
-workflow refreshes the section when a new version is released, and the drift check
-reports repositories that are behind. Locally:
+Repositories do not carry a copy. A repository's `AGENTS.md` adds project specifics
+only. An old section between `<!-- factory-standards:begin -->` and
+`<!-- factory-standards:end -->` is a snapshot: the installed file wins, and
+`scripts/sync_agents_md.py --target AGENTS.md` deletes it when a repository is next
+edited.
 
-```bash
-python3 scripts/sync_agents_md.py --shared agents/AGENTS.shared.md \
-  --version "$(cat VERSION)" --target /path/to/repo/AGENTS.md
-```
+A standard release therefore needs one install on the agent server and no commit in
+any repository.
 
 ## Changing the standard
 

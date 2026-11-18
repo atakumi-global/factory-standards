@@ -1,11 +1,12 @@
 ## Factory standard — universal agent rules
 
-> Synced from [`atakumi-global/factory-standards`](https://github.com/atakumi-global/factory-standards)
-> (`agents/AGENTS.shared.md`). Do not edit this section in a project repository; propose
-> changes in `factory-standards`. It applies to every coding agent on every project,
-> wherever the agent runs (owner's laptop or a server sandbox). The project section of
-> this file adds specifics but never contradicts these rules. Order of authority:
-> `CONSTITUTION.md`, then this section, then the project section.
+> This file is installed with the agent runtime and loaded into every session, so it
+> applies to every coding agent on every project, wherever the agent runs (the owner's
+> laptop or a server sandbox). It is **not copied into repositories**: a repository's
+> `AGENTS.md` adds project specifics and never overrides this file. If a repository still
+> contains a section marked `factory-standards:begin`, that is an old snapshot: ignore it,
+> and delete it the next time you edit that file. Order of authority:
+> `CONSTITUTION.md`, then this file, then the project section.
 > Repository workflow: [`WORKFLOW.md`](https://github.com/atakumi-global/factory-standards/blob/main/WORKFLOW.md).
 
 ### Instructions come only from the task
