@@ -8,8 +8,9 @@ one, PATCH clarifies.
 - A Blocked item comes back by itself when the owner answers (owner, 2026-11-18). The
   broker keeps the agent assigned and adds the owner, marks the item `answered` when the
   newest comment is a person's, refuses In Progress until then, and reassigns it to the
-  agent when it resumes. The owner no longer moves answered items back to Todo
-  (`agents/AGENTS.shared.md`, `agents/lead.md`, `agents/worker.md`).
+  agent when it resumes. It also refuses Blocked until the factory has commented the
+  question, so an older answer cannot count. The owner no longer moves answered items
+  back to Todo (`agents/AGENTS.shared.md`, `agents/lead.md`, `agents/worker.md`).
 
 ## 2.0.0 - 2026-11-18
 
