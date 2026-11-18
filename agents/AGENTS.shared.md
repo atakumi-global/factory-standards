@@ -45,8 +45,8 @@
   Cancelled. Set **In Progress** before changing anything; set **Blocked** and
   reassign the owner only when a human must answer or act; when the owner answers, the
   next run resumes the item by itself. **A dependency on another
-  item is never Blocked:** write `Depends on: <ITEM-ID>` in the description (or comment
-  it) and leave the item in Todo. The broker refuses to start it until every dependency
+  item is never Blocked:** write `Depends on: <ITEM-ID>` in the description (or a short
+  comment) and leave the item in Todo. The broker refuses to start it until every dependency
   is Approved or later, and the next scheduled run picks it up by itself.
 - **People's items are off limits, except comments.** Agents work only on items assigned
   to the agent account; an item assigned to a person (or to nobody) stays read-only,
@@ -116,7 +116,7 @@
 ### Security (every work item)
 
 Before finishing, check each of these against your change and state the outcome in
-the Plane evidence comment (`ok`, `n/a` with a reason, or the issue raised):
+the evidence file in the knowledge base (`ok`, `n/a` with a reason, or the issue raised):
 
 1. Input validated and allowlisted before it reaches a database, a shell or a prompt;
    output encoded; untrusted content never rendered as raw HTML.
@@ -228,7 +228,11 @@ finishing.
 ### End-of-run report (required)
 
 Every agent ends a completed task with this exact structure, in two layers. It must read
-in under a minute: plain language, short, no omissions.
+in under a minute: plain language, short, no omissions. **The report is the evidence file
+in the project's knowledge base** at `log/YYYY-MM-DD-<ITEM-ID>.md`, committed and pushed
+before the handback. It also holds the gate and `factory-check` output with run ids, the
+branch, merge commit and pushed state, the changes made, the security checklist outcome
+and any findings or audits. The tester's guide is not duplicated there.
 
 **Activity log.** Short bullets, one per thing done: what was done, where, and the result.
 No module-by-module detail, and no paragraph that restates the diff.
@@ -252,5 +256,20 @@ Gate and `factory-check` evidence is one line when it passes: `### factory-check
 List the scanners only when one fails. Keep the exact detail for failures, blockers and
 security findings, and say nothing the reader can already see.
 
-The same report, plus the gate and `factory-check` output and the security checklist
-outcome, is posted as the Plane comment when the item moves to **In Review**.
+### Handback in Plane (required)
+
+The Plane comment is short; the evidence stays in the knowledge base. Write it as:
+
+- Outcome: one sentence.
+- Checks: one line (`gate and factory-check pass`); detail only for a failure.
+- Next step: one sentence. When blocked, that sentence is the single question.
+- One absolute GitHub link to the evidence file under `log/` in the project's knowledge
+  base, for example
+  `https://github.com/atakumi-global/kb-<project>/blob/main/log/YYYY-MM-DD-<ITEM-ID>.md`.
+
+The broker refuses a handback whose link does not resolve, a comment with more than one
+such link, and a non-guide comment over 1500 characters. Short coordination notes without
+a link are allowed. The tester's guide (`## How to test`) stays in the work item and is
+read while acting. Post the guide first and the handback last: In Review requires the
+handback as the newest comment, in addition to the guide; Blocked also requires the
+handback as the newest comment.

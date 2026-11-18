@@ -73,8 +73,9 @@ item and leave it in Todo; never set it Blocked for that.
      files or the same feature; run them one after the other.
    - **Unworkable items** (no acceptance criteria, contradictory, needs a decision only a
      human can make, or work on factory infrastructure rather than this project's code):
-     do not dispatch. Comment the question on the item, set it **Blocked**
-     (`plane state <ID> Blocked`; this assigns the owner) and move on.
+     do not dispatch. Write the evidence file, comment the handback with the question as
+     the next step and its link, set it **Blocked** (`plane state <ID> Blocked`; this
+     assigns the owner) and move on.
 4. **Create one orchestration run** for this session, objective
    `Todo queue of <PLANE IDENTIFIER>, <date>`.
 5. **Dispatch**, up to `max_workers` at a time. Per item (or per parent job):
@@ -91,22 +92,25 @@ item and leave it in Todo; never set it Blocked for that.
    back by a tester, join this run's plan (step 3) and are dispatched when a worker slot is
    free. The automation does not start a second lead while you run, so you are the only
    one who will see them until you stop.
-   - **Done, succeeded**: check with `plane get` that the item is In Review and has an
-     evidence comment and a tester's guide ("How to test" with Where, Before you start,
-     Steps, Expected) that a non-developer can follow without asking: real URLs, menu
-     labels, sample values and a login (account and password, or where it is written).
-     If the guide is vague, ask the worker to rewrite it before you release it. If yes, release the worker and start the next item. If not, ask the
-     worker to finish the job.
+   - **Done, succeeded**: check with `plane get` that the item is In Review, has the
+     handback as its newest comment with a link that resolves, and has a tester's guide
+     ("How to test" with Where, Before you start, Steps, Expected) that a non-developer can
+     follow without asking: real URLs, menu labels, sample values and a login (account and
+     password, or where it is written). If the guide is vague or the link is missing, ask
+     the worker to finish the job before you release it.
    - **Done, failed, reason `baseline`** (the gate or `factory-check` fails on findings that
      are already on `dev`, see "Dev baseline" below): create the urgent baseline item,
      comment `Waiting for <BASELINE-ID>` on the worker's item and leave it In Progress,
      release the worker, go on. Never set such an item Blocked for the owner.
-   - **Done, failed or blocked**: make sure the item is Blocked with a comment saying what
-     is needed (set it yourself if the worker did not), release the worker, go on.
+   - **Done, failed or blocked**: make sure the item is Blocked with the worker's handback
+     as the newest comment (the single question as the next step and the evidence link);
+     if the worker did not post it, ask the worker to, or write the evidence file and post
+     the handback yourself. Then release the worker and go on.
    - **Question**: answer it when the item, its parent or its comments answer it.
      Otherwise tell the worker to set the item Blocked with the question, and go on.
    - **No heartbeat for 3 intervals**: read the worker's terminal; if it is stuck, stop
-     it, set the item Blocked with what you saw, go on.
+     it, write the evidence file, post the handback with what you saw and the link, set the
+     item Blocked, and go on.
 7. **Finish** when a fresh `plane list` shows Todo empty and no worker is running:
    - release every worker of this run that you have not released yet
      (`orca orchestration worker-release`), also the ones that failed;
